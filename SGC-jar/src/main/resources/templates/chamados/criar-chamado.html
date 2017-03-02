@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="pt" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/layout-padrao}">
+<body>
+
+<section layout:fragment="conteudo">
+
+<div class="page-header">
+				<div class="container-fluid">
+					<h1>Criar Chamado</h1>
+				</div>
+			</div>
+
+			<div class="container-fluid">
+
+				<form method="POST" class="form-vertical  js-form-loading" th:object="${chamado}" 
+				th:action="@{/chamados/novo}">
+				
+					<div class="alert  alert-danger  alert-dismissible" role="alert" th:if="${#fields.hasAnyErrors()}">
+					<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+					<th:block th:each="erro : ${#fields.detailedErrors()} ">
+						<i class="fa  fa-exclamation-circle"></i>
+						<span th:text="${erro.message}"></span>
+						<br />
+					</th:block>
+					</div>
+     			<div class="alert  alert-success"
+					th:if="${!#strings.isEmpty(mensagem)}">
+					<span th:text="${mensagem}"></span><br />
+
+   				</div>
+   			<div class="form-group">
+					<label for="textarea-chamado-descricao">Descrição</label>
+					<textarea th:field="*{descricao}" id="textarea-chamado-descricao" maxlength="600" placeholder="Exemplo: Descreva o defeito do equipamento" rows="3"
+					class="form-control"></textarea>
+			</div>
+   				
+   				
+   			<div class="row">
+                 <div class="col-sm-6">
+					  <div class="form-group">
+						   <label for="select-chamado-prioridade">Prioridade</label>
+						   <select th:field="*{prioridade}" id="select-chamado-prioridade" class="form-control" >
+	                               <option value="">Escolha a Prioridade</option>
+	                               <option th:each="prioridade : ${prioridades}"
+	                                       th:value="${prioridade}"
+	                                       th:text="${prioridade}"    ></option>
+	                       </select>				 
+					 </div>
+                 </div>
+                                  <div class="col-sm-6">
+					  <div class="form-group">
+						   <label for="select-chamado-loja">Loja</label>
+						    <select  th:field="*{loja}" id="select-chamado-loja" class="form-control">
+						             <option value="">Escolha a Loja</option>
+						             <option th:each="loja : ${lojas}"
+						                     th:value="${loja.id}"
+						                     th:text="${loja.nome}" ></option>
+						    
+						    </select>
+					  </div>
+                </div> 
+                 <div class="col-sm-6">
+					  <div class="form-group">
+						   <label for="select-chamado-equipamento">Equipamento</label>
+						    <select   th:field="*{equipamento}" id="select-chamado-equipamento" class="form-control">
+						             <option value="">Escolha o Equipamento</option>
+						             <option th:each="equipamento : ${equipamentos}"
+						                     th:value="${equipamento.id}"
+						                     th:text="|${equipamento.nome}-${equipamento.local}|" ></option>
+						    
+						    </select>
+					  </div>
+                </div>
+                 <div class="col-sm-6">
+					  <div class="form-group">
+						   <label for="select-chamado-usuario">Usuário</label>
+						    <select  th:field="*{usuario}" id="select-chamado-usuario" class="form-control">
+						             <option value="">Escolha o usuario</option>
+						             <option th:each="usuario : ${usuarios}"
+						                     th:value="${usuario.id}"
+						                     th:text="${usuario.nome}" ></option>
+						    
+						    </select>
+					  </div>
+                 </div>        
+        
+           </div>	     
+
+                    <div>
+
+						<input th:field="*{id}" type="hidden" />
+					</div>
+					
+
+					<div class="form-group">
+						<button class="btn  btn-primary" type="submit">Salvar</button>
+					</div>
+
+				</form>
+			</div>
+</section>
+</body>
+</html>

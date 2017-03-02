@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="pt" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/layout-padrao}">
+<body>
+
+	<section layout:fragment="conteudo">
+
+		<div class="page-header">
+			<div class="container-fluid">
+				<h1>Cadastro de Loja</h1>
+			</div>
+		</div>
+
+		<div class="container-fluid">
+
+			<form method="POST" class="form-vertical  js-form-loading"
+				th:object="${loja}" th:action="@{/lojas/novo}">
+
+				<div class="alert  alert-danger  alert-dismissible" role="alert"
+					th:if="${#fields.hasAnyErrors()}">
+					<button type="button" class="close" data-dismiss="alert"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+					<th:block th:each="erro : ${#fields.detailedErrors()} ">
+						<i class="fa  fa-exclamation-circle"></i>
+						<span th:text="${erro.message}"></span>
+						<br />
+					</th:block>
+				</div>
+				<div class="alert  alert-success"
+					th:if="${!#strings.isEmpty(mensagem)}">
+					<span th:text="${mensagem}"></span><br />
+
+				</div>
+
+				<div class="form-group">
+					<label for="input-loja-nome">Nome</label> 
+					<input th:field="*{nome}" placeholder="Exemplo: Loja Matriz" id="input-loja-nome" 
+					       type="text" class="form-control" />
+				</div>
+				<div class="row">
+					<div class="col-sm-6">
+						<div class="form-group">
+							<label for="input-loja-numero">Numero da Filial</label>
+						    <input th:field="*{numeroLoja}" id="input-loja-numero" type="text"
+								   class="form-control numeros" placeholder="Exemplo numero da filial: 01" />
+						</div>
+					</div>
+
+<!-- 					<div class="col-sm-6">
+						<div class="form-group">
+							<input
+								 type="hidden" class="form-control">
+						</div>
+					</div> -->
+				</div>
+
+				<div class="form-group">
+					<label for="input-loja-descricao">Descrição</label>
+					<textarea th:field="*{descricao}" id="input-loja-descricao" rows="3"
+						class="form-control"></textarea>
+				</div>
+				
+				<br/>
+
+              <div class="container-fluid">
+				<h3>Endereço da Loja</h3>
+			  </div>
+                   <br/>
+                   
+                   	<div class="form-group">
+					    <label for="input-loja-endereco-logradouro">Logradouro</label>
+					    <input th:field="*{endereco.logradouro}" id="input-loja-endereco-logradouro" placeholder="Rua,avenida,travessa e etc." type="text" class="form-control" />
+				    </div>
+				<div class="row">
+					<div class="col-sm-6">
+					 	<div class="form-group">
+					       <label for="input-loja-endereco-numero">Numero da Loja</label>
+					       <input th:field="*{endereco.numero}" id="input-loja-endereco-numero" placeholder="numero do estabelecimento: 540" type="text" class="form-control numeros" />
+				    </div>
+
+					</div>
+
+					<div class="col-sm-6">
+						<div class="form-group">
+							<label for="input-loja-endereco-cep">CEP</label>
+							<input th:field="*{endereco.cep}"	id="input-loja-endereco-cep" placeholder="Exemplo: 0800-000" maxlength="8" type="text" class="form-control cep">
+						</div>		
+						
+					</div>
+				    <div class="col-sm-4">
+					 	<div class="form-group">
+					       <label for="input-loja-endereco-bairro">Bairro</label>
+					       <input th:field="*{endereco.bairro}" id="input-loja-endereco-bairro" placeholder="Exemplo: Centro" type="text" class="form-control" />
+				    </div>
+
+					</div>
+
+					<div class="col-sm-4">
+						<div class="form-group">
+							<label for="input-loja-endereco-cidade">Cidade</label>
+							 <input th:field="*{endereco.municipio}" id="input-loja-endereco-cidade" placeholder="Exemplo: São Paulo" maxlength="30" type="text" class="form-control">
+						</div>		
+						
+					</div>
+				    <div class="col-sm-4">
+						<div class="form-group">
+							<label for="input-loja-endereco-estado">Estado</label>
+							 <input th:field="*{endereco.estado}"	id="input-loja-endereco-estados" placeholder="Exemplo: São Paulo" maxlength="30" type="text" class="form-control">
+						</div>		
+						
+					</div>
+					
+
+
+					
+					<div>
+						<input th:field="*{id}" type="hidden" />
+					</div>
+				</div>
+
+				
+				<div class="form-group">
+					<button class="btn  btn-primary" type="submit">Salvar</button>
+				</div>
+
+			</form>
+		</div>
+	</section>
+</body>
+</html>

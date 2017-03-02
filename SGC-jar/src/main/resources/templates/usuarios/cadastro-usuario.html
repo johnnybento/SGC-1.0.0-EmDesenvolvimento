@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/layout-padrao}">
+<body>
+
+	<section layout:fragment="conteudo">
+
+		<div class="page-header">
+			<div class="container-fluid">
+				<h1>Cadastro de Usuario</h1>
+			</div>
+		</div>
+
+		<div class="container-fluid">
+
+			<form method="POST" class="form-vertical  js-form-loading"
+				th:object="${usuario}" th:action="@{/usuarios/novo}">
+
+				<div class="alert  alert-danger  alert-dismissible" role="alert"
+					th:if="${#fields.hasAnyErrors()}">
+					<button type="button" class="close" data-dismiss="alert"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+					<th:block th:each="erro : ${#fields.detailedErrors()} ">
+						<i class="fa  fa-exclamation-circle"></i>
+						<span th:text="${erro.message}"></span>
+						<br />
+					</th:block>
+				</div>
+				<div class="alert  alert-success"
+					th:if="${!#strings.isEmpty(mensagem)}">
+					<span th:text="${mensagem}"></span><br />
+
+				</div>
+              <div class="row">
+                  <div class="col-sm-6">
+				      <div class="form-group">
+					      <label for="input-usuario-nome">Nome</label> 
+					      <input th:field="*{nome}" placeholder="Exemplo: Roberto Alves" id="input-usuario-nome" 
+					              type="text" class="form-control" />
+				      </div>
+				   </div>
+				   <div class="col-sm-6">
+						<div class="form-group">
+							<label for="input-senha-numero">Senha</label>
+						    <input th:field="*{password}" id="input-senha-numero" type="text"
+								   class="form-control" placeholder="Digite uma senha" />
+						</div>
+					</div>
+
+				</div>
+              <div class="row">
+                   <div class="col-sm-6">
+				        <div class="form-group">
+					        <label for="input-usuario-telefone">Telefone</label>
+                            <input th:field="*{telefone}" id="input-usuario-telefone" type="text"
+								   class="form-control telefone" placeholder="(11) 3300-2233" />
+				        </div>
+				    </div>
+			        <div class="col-sm-6">         
+                   	     <div class="form-group">
+					           <label for="input-usuario-loja" th:text="#{usuario.loja}">Loja</label>
+				               <select id="input-usuario-loja"
+							           class="form-control" th:field="*{loja}">
+								   <option value="">Selecione a loja do usuário</option>
+								   <option th:each="loja: ${lojas}" 
+								           th:value="${loja.id}"
+									       th:text="${loja.nome}"></option>
+					  </select>
+				         </div>
+				    </div>
+			  </div>
+			  <div class="row">
+					<div class="col-sm-6">
+				    <div class="form-group">
+					     <label for="input-usuario-tipo">Tipo de Usuário</label>
+				         <select id="input-usuario-tipo"
+							     class="form-control"
+						         th:field="*{tipo}">
+						        <option value="">Selecione o tipo do usuário</option>
+								<option th:each="tipo: ${tipos}" 
+								        th:value="${tipo}"
+									    th:text="#{|tipo.${tipo}|}"></option>
+
+
+					    </select>
+				   </div>		
+				
+			   </div>
+					<div>
+						<input th:field="*{id}" type="hidden" />
+					</div>
+				</div>
+
+				
+				<div class="form-group">
+					<button class="btn  btn-primary" type="submit">Salvar</button>
+				</div>
+
+			</form>
+		</div>
+	</section>
+</body>
+</html>

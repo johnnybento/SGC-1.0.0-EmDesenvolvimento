@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="pt" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/layout-padrao}">
+<body>
+
+<section layout:fragment="conteudo">
+
+<div class="page-header">
+				<div class="container-fluid">
+
+					       <h1>					
+				 	             Informações do Chamado com o ID-0
+				 	             <span th:text="${chamado.id}"></span>
+				           </h1>
+			    				    
+				</div>
+			</div>
+
+			<div class="container-fluid">
+
+                
+		 <form method="POST" class="form-vertical  js-form-loading"  >
+     			<div class="alert  alert-success"
+					th:if="${!#strings.isEmpty(mensagem)}">
+					<span th:text="${mensagem}"></span><br />
+
+   				</div>
+   			<div class="form-group">
+					<label for="textarea-chamado-descricao">Descrição</label>
+					<textarea  readonly="readonly" id="textarea-chamado-descricao" maxlength="600" th:text="${chamado.descricao}" rows="3"
+					class="form-control"></textarea>
+			</div>
+   				
+   				
+   			<div class="row">
+                 <div class="col-sm-3">
+					  <div class="form-group">
+						   <label for="input-chamado-prioridade">Prioridade</label>
+                           <input  id="input-chamado-prioridade" class="form-control" readonly="readonly" th:value="${chamado.prioridade}" />				 
+					 </div>
+                 </div>
+                                  <div class="col-sm-3">
+					  <div class="form-group">
+						   <label for="input-chamado-loja">Loja</label>
+                           <input id="input-chamado-loja" class="form-control" readonly="readonly" th:value="${chamado.loja.nome}" />
+					  </div>
+                </div> 
+                 <div class="col-sm-3">
+					  <div class="form-group">
+						   <label for="input-chamado-equipamento">Equipamento</label>
+                           <input id="input-chamado-equipamento" class="form-control" readonly="readonly" th:value="${chamado.equipamento.nome}" />
+					  </div>
+                </div>
+                <div class="col-sm-3">
+					  <div class="form-group">
+						   <label for="input-chamado-equipamento-local">Local</label>
+                           <input id="input-chamado-equipamento-local" class="form-control" readonly="readonly" th:value="${chamado.equipamento.local}" />
+					  </div>
+                </div>
+                 <div class="col-sm-3">
+					  <div class="form-group">
+						   <label for="input-chamado-usuario">Usuário</label>
+                          <input id="input-chamado-usuario" class="form-control" readonly="readonly" th:value="${chamado.usuario.nome}" />
+					  </div>
+                 </div>
+                 <div class="col-sm-3">
+					  <div class="form-group">
+						   <label for="input-chamado-status">Status</label>
+                          <input id="input-chamado-status" class="form-control" readonly="readonly" th:value="${chamado.status}" />
+					  </div>
+                 </div>
+                 <div class="col-sm-3">
+					  <div class="form-group">
+						   <label for="input-chamado-tecnico">Técnico</label>
+                          <input id="input-chamado-tecnico" class="form-control" readonly="readonly" value="Meu nome" />
+					  </div>
+                 </div>
+                 <div class="col-sm-3">
+					  <div class="form-group">
+						   <label for="input-chamado-criacao">Data de Criação</label>
+                          <input id="input-chamado-criacao" class="form-control" readonly="readonly" th:value="${chamado.datas.dataCriacaoF}" />
+					  </div>
+                 </div>
+               <div id="informacoes" th:if="${chamado.status.idStatus == 2} ? ${chamado.status.idStatus == 2}">
+                             <div class="col-sm-3">                      
+                                   <div class="form-group">
+						                  <label for="input-chamado-tipoSolucao">Tipo Solucao</label>
+                                          <input id="input-chamado-tipoSolucao" th:value="${chamado.solucao.tipoSolucao}" readonly="readonly" class="form-control js-moeda" />
+					               </div>
+                             </div>
+                            
+                            
+                            
+                             <div class="col-sm-3">                      
+                                   <div class="form-group">
+						                  <label for="input-chamado-locomocao">Gastos com locomoção</label>
+                                          <input id="input-chamado-locomocao" th:value="|R$ ${chamado.solucao.valorTransporte}|" readonly="readonly" class="form-control js-moeda" />
+					               </div>
+                             </div>
+                             <div class="col-sm-3">                      
+                                   <div class="form-group">
+						                  <label for="input-chamado-outrosGastos">Outros gastos</label>
+                                          <input id="input-chamado-outrosGastos" th:value="|R$ ${chamado.solucao.outrosValores}|" readonly="readonly" class="form-control js-moeda" />
+					               </div>
+                             </div>
+                       <div class="col-sm-3">                      
+                            <div class="form-group">
+						         <label for="valorTotal">Valor Total</label>
+                                 <input id="valorTotal" class="form-control" readonly="readonly" th:value="${chamado.solucao.valorTotal}"/>
+					       </div>
+                      </div>                                              
+               </div>
+                   
+                                 
+          </div>      
+    		  <div id="informacoes" th:if="${chamado.status.idStatus == 2} ? ${chamado.status.idStatus == 2}">	  			   
+   			   
+   			   <div class="form-group">
+					<label for="textarea-chamado-descricao-solucao">Solução</label>
+					<textarea   id="textarea-chamado-descricao-solucao" maxlength="600" readonly="readonly" th:text="${chamado.solucao.descricaoSolucao}" rows="3"
+					class="form-control"></textarea>
+			  </div>
+          
+          </div>
+              <div th:if="${chamado.reAbrir != null} ? ${chamado.reAbrir != null}">
+                   <div class="form-group">
+					      <label for="textarea-chamado-descricao-solucao">Motivo de Reabertura</label>
+					      <textarea   id="textarea-chamado-descricao-solucao" maxlength="600" readonly="readonly" th:text="${chamado.reAbrir.motivo}" rows="3"
+					                  class="form-control"></textarea>
+			  </div>             
+              
+              </div>			
+
+				</form>
+
+			</div>
+</section>
+</body>
+</html>

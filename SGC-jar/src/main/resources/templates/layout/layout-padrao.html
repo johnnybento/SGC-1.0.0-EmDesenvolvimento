@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="pt" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+<meta charset="UTF-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title th:text="#{sistema.titulo}"></title>
+
+<link rel="stylesheet" type="text/css" th:href="@{/layout/stylesheets/vendors.min.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/layout/stylesheets/algaworks.min.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/layout/stylesheets/application.css}" />
+
+<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
+		<script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+		<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+	<![endif]-->
+</head>
+<body>
+
+<!-- 	<div class="aw-layout-loading  js-loading-overlay">
+		<div class="aw-layout-loading__container">
+			<span class="aw-balls-spinner">Carregando...</span>
+		</div>
+	</div> -->
+
+	<div class="aw-layout-page">
+
+		<nav
+			class="navbar  navbar-fixed-top  navbar-default  js-sticky-reference"
+			id="main-navbar">
+			<div class="container-fluid">
+
+				<div class="navbar-header">
+					<a class="navbar-brand  hidden-xs" href="#"> <img
+						alt="AlgaWorks" th:src="@{/layout/images/logo.png}" />
+					</a>
+
+					<ul class="nav  navbar-nav">
+						<li><a href="#" class="js-sidebar-toggle"><i
+								class="fa  fa-bars"></i></a></li>
+					</ul>
+				</div>
+
+				<ul class="nav navbar-nav  navbar-right">
+
+					<li class="dropdown"><a href="#" class="dropdown-toggle"
+						data-toggle="dropdown" role="button" aria-haspopup="true"
+						aria-expanded="false"> <i class="fa  fa-user"></i>
+					</a>
+
+						<ul class="dropdown-menu">
+							<li>
+								<div class="aw-logged-user">
+									<img src="https://api.adorable.io/avatars/80/joaodascouves"
+										width="80" height="80" alt="João das Couves"
+										class="aw-logged-user__picture" /> <span
+										class="aw-logged-user__name">João das Couves</span>
+								</div>
+							</li>
+							<li role="separator" class="divider"></li>
+							<li><a href="#">Meu perfil</a></li>
+							<li><a href="#">Alterar senha</a></li>
+							<li><a href="#">Pagamentos</a></li>
+						</ul></li>
+
+					<li><a href="#"><em class="fa  fa-sign-out"></em></a></li>
+				</ul>
+
+			</div>
+		</nav>
+
+		<aside class="aw-layout-sidebar  js-sidebar">
+			<div class="aw-layout-sidebar__content">
+
+				<nav class="aw-menu  js-menu">
+					<ul class="aw-menu__list">
+
+						<li class="aw-menu__item">
+						       <a href="dashboard.html">
+						          <i class="fa  fa-fw  fa-home"></i>
+						          <span th:text="#{menu.dashboard}"></span>
+						       </a>
+						 </li>
+
+						<li class="aw-menu__item  is-active">
+						   <a href="#">
+						      <i class="fa  fa-fw  fa-file-text"></i>
+						      <span th:text="#{menu.cadastros}">Cadastros</span>
+						      <i 	class="aw-menu__navigation-icon  fa"></i>
+						    </a>
+
+							    <ul class="aw-menu__list  aw-menu__list--sublist">
+								    
+								    <li class="aw-menu__item  aw-menu__item--link is-active">
+								       <a 	th:href="@{/equipamentos/novo}" th:text="#{menu.cadastros.equipamento}">Cadastro de equipamento</a>
+								    </li>
+								    <li class="aw-menu__item  aw-menu__item--link">
+								       <a	th:href="@{/lojas/novo}" th:text="#{menu.cadastros.loja}">Cadastro de loja</a>
+								   </li>
+								    <li class="aw-menu__item  aw-menu__item--link">
+								       <a	th:href="@{/usuarios/novo}" th:text="#{menu.cadastros.usuario}">Cadastro de usuário</a>
+								   </li>
+							    </ul>
+							
+							</li>
+
+						<li class="aw-menu__item  is-expanded">
+						    <a href="#">
+						        <i	class="fa  fa-fw  fa-file-text"></i><span th:text="#{menu.pesquisas}">Pesquisas</span>
+								<i class="aw-menu__navigation-icon  fa"></i>
+						    </a>
+
+							<ul class="aw-menu__list  aw-menu__list--sublist">
+								<li class="aw-menu__item  aw-menu__item--link">
+								    <a th:href="@{/equipamentos}" th:text="#{menu.pesquisas.equipamento}">Pesquisa de equipamento</a>
+								</li>
+								<li class="aw-menu__item  aw-menu__item--link">
+								    <a th:href="@{/lojas}" th:text="#{menu.pesquisas.loja}">Pesquisa de loja</a>
+								</li>
+								<li class="aw-menu__item  aw-menu__item--link">
+								     <a  th:href="@{/usuarios}" th:text="#{menu.pesquisas.usuario}">Pesquisa de usuário</a>
+								</li>
+						   </ul>
+					  </li>
+					  
+						<li class="aw-menu__item  is-active">
+						   <a href="#">
+						      <i class="fa  fa-fw  fa-file-text"></i>
+						      <span th:text="#{menu.chamados}">Cadastros</span>
+						      <i 	class="aw-menu__navigation-icon  fa"></i>
+						    </a>
+
+							    <ul class="aw-menu__list  aw-menu__list--sublist">
+							      <li class="aw-menu__item  aw-menu__item--link">
+								       <a	th:href="@{/chamados}" th:text="#{menu.chamados.global}">Global</a>
+								   </li>
+								    
+								    <li class="aw-menu__item  aw-menu__item--link is-active">
+								       <a 	th:href="@{/chamados/novo}" th:text="#{menu.chamados.criar}">Abrir Chamado</a>
+								    </li>
+								    <li class="aw-menu__item  aw-menu__item--link">
+								       <a	th:href="@{/lojas/novo}" th:text="#{menu.chamados.pendentes}">P</a>
+								   </li>
+								    <li class="aw-menu__item  aw-menu__item--link">
+								       <a	th:href="@{/usuarios/novo}" th:text="#{menu.chamados.concluidos}"></a>
+								   </li>
+								    <li class="aw-menu__item  aw-menu__item--link">
+								       <a	th:href="@{/usuarios/novo}" th:text="#{menu.chamados.meu.chamados}">meu</a>
+								   </li>
+								   <li class="aw-menu__item  aw-menu__item--link">
+								       <a	th:href="@{/usuarios/novo}" th:text="#{menu.chamados.historico}">historico</a>
+								   </li>
+							    </ul>
+							
+							</li>
+
+					</ul>
+				</nav>
+
+			</div>
+		</aside>
+
+		<section class="aw-layout-content  js-content" layout:fragment="conteudo">
+		
+		
+		</section>
+
+		<footer class="aw-layout-footer  js-content">
+			<div class="container-fluid">
+				<span class="aw-footer-disclaimer" th:text="|&copy;#{sistema.footer|}">&copy; 2017 JohnnyBento.
+					Todos os direitos reservados.</span>
+			</div>
+		</footer>
+
+	</div>
+
+	<div class="aw-search-modal  js-search-modal">
+		<form action="#" class="aw-search-modal__form">
+			<input class="aw-search-modal__input  js-search-modal-input"
+				type="text" placeholder="O que você está procurando?" />
+			<div class="aw-search-modal__input-icon">
+				<i class="glyphicon  glyphicon-search  js-search-modal-go"></i>
+			</div>
+		</form>
+
+		<div class="aw-search-modal__controls">
+			<i class="glyphicon glyphicon-remove  js-search-modal-close"></i>
+		</div>
+	</div>
+
+	<script th:src="@{/layout/javascripts/vendors.min.js}"></script>
+	<script th:src="@{/layout/javascripts/algaworks.min.js}"></script>
+	<script th:src="@{/javascripts/vendors/jquery.masknumber.min.js}"></script>
+	<script th:src="@{/javascripts/vendors/jquery.maskedinput.min.js}"></script>
+	<script th:src="@{/javascripts/vendors/jquery.mask.min.js}"></script>
+	
+	<th:block layout:fragment="modal-excluir">
+	   <div class="modal  fade" id="confirmaExclusaoModal" tabindex="-1" role="dialog">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<form th:action="@{/|$classe|s}" method="POST">
+					<input type="hidden" name="_method" value="DELETE" />
+
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal"
+								aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+							<h4 class="modal-title" id="myModalLabel" th:text="${classe}">Excluir alguma coisa</h4>
+						</div>
+						<div class="modal-body">
+							<span>Tem certeza?</span>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn  btn-default"
+								data-dismiss="modal">Cancelar</button>
+							<button type="submit" class="btn  btn-primary" >Excluir</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	
+	
+	</th:block>
+	<th:block layout:fragment="javascript-extra">
+	 
+	
+	</th:block>
+	
+	<script>
+		$('.js-moeda').maskNumber({
+			decimal : ',',
+			thousands : '.'
+
+		});
+		jQuery('.cep').mask("99999-999");
+		jQuery('.telefone').mask("(99) 99999-9999");
+		$('.numeros').mask('0#');
+		
+		
+	</script>
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/layout-padrao}">
+<body>
+
+<section layout:fragment="conteudo">
+
+<div class="page-header">
+				<div class="container-fluid">
+					<h1>Cadastro de Equipamento</h1>
+				</div>
+			</div>
+
+			<div class="container-fluid">
+
+				<form method="POST" class="form-vertical  js-form-loading" th:object="${equipamento}" 
+				th:action="@{/equipamentos/novo}">
+				
+					<div class="alert  alert-danger  alert-dismissible" role="alert" th:if="${#fields.hasAnyErrors()}">
+					<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+					<th:block th:each="erro : ${#fields.detailedErrors()} ">
+						<i class="fa  fa-exclamation-circle"></i>
+						<span th:text="${erro.message}"></span>
+						<br />
+					</th:block>
+					</div>
+     			<div class="alert  alert-success"
+					th:if="${!#strings.isEmpty(mensagem)}">
+					<span th:text="${mensagem}"></span><br />
+
+   				</div>
+   			<div class="row">
+                 <div class="col-sm-6">
+					  <div class="form-group">
+						   <label for="input-equipamento-nome">Nome</label>
+						   <input	th:field="*{nome}" id="input-equipamento-nome" maxlength="50" placeholder="Exemplos: pdma01 ou tel01" type="text" class="form-control" />
+					 </div>
+                 </div>
+                 <div class="col-sm-6">
+					  <div class="form-group">
+						   <label for="input-equipamento-local">Local</label>
+						    <input	th:field="*{local}" id="input-equipamento-local" maxlength="50" placeholder="Exemplos: Caixa 01 ou Telefone Caixa Central" type="text" class="form-control" />
+					  </div>
+                </div>
+                 <div class="col-sm-6">
+					  <div class="form-group">
+						   <label for="input-equipamento-setor">Setor</label>
+						   <input	th:field="*{setor}" id="input-equipamento-setor" maxlength="50" placeholder="Exemplos: Brinquedos, CPD, Armarinhos e etc" type="text" class="form-control" />
+					 </div>
+                 </div>
+                 <div class="col-sm-6">
+					  <div class="form-group">
+						   <label for="select-equipamento-loja">Loja</label>
+						    <select  th:field="*{loja}" id="select-equipamento-loja" class="form-control">
+						             <option value="">Escolha a Loja</option>
+						             <option th:each="loja : ${lojas}"
+						                     th:value="${loja.id}"
+						                     th:text="${loja.nome}" ></option>
+						    
+						    </select>
+					  </div>
+                </div>                
+              
+           </div>	     
+					<div class="form-group">
+						<label for="textarea-equipamento-descricao">Descrição</label>
+						<textarea th:field="*{descricao}" id="textarea-equipamento-descricao" maxlength="600" placeholder="Exemplo: Este equipamento possui Monitor, Impressora Fiscal, teclado, Gabinete completo com placa mãe, HD e etc..." rows="3"
+							class="form-control"></textarea>
+					</div>
+
+					<div class="row">
+						<div class="col-sm-6">
+							<div class="form-group">
+								<label for="input-produto-estoque">Patrimônio</label>
+								 <input th:field="*{patrimonio}" id="input-produto-estoque" type="text" class="form-control numeros">
+							</div>
+						</div>
+	                    <div>
+
+						<input th:field="*{id}" type="hidden" />
+					</div>
+					</div>
+
+					<div class="form-group">
+						<button class="btn  btn-primary" type="submit">Salvar</button>
+					</div>
+
+				</form>
+			</div>
+</section>
+</body>
+</html>
