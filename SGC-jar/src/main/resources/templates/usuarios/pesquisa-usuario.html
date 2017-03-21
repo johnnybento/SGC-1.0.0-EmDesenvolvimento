@@ -27,7 +27,14 @@
 					<span th:text="${mensagem}"></span><br />
 
 				</div>
-
+		<div class="alert  alert-danger  alert-dismissible" role="alert" th:if="${!#strings.isEmpty(erro)}">
+					<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+						<i class="fa  fa-exclamation-circle"></i>
+						<span th:text="${erro}"></span>
+						<br />
+		</div>
 			<form method="GET" class="form-vertical  js-form-loading" th:object="${usuarioFiltro}" >
 				<div class="form-group">
 					<div class="input-group">
@@ -46,6 +53,14 @@
 					</div>
 				</div>
 			</form>
+		 <div class="row">
+		    <div class="col-sm-6">
+			     <div class="form-group">					
+                      <a th:href="@{/usuarios/novo}" class="btn btn-success" sec:authorize="hasRole('ROLE_ADMINISTRADOR')">Novo Usuário <i  class="fa  fa-plus"> </i></a>
+                      <a th:href="@{/usuarios}" class="btn btn-success" >Limpar filtros <i  class="fa  fa-eraser"> </i></a>
+                 </div>              
+           </div>
+		</div>
 
 			<div class="table-responsive">
 				<table id="tabela-produtos"
@@ -53,12 +68,15 @@
 					<thead class="aw-table-header-solid">
 						<tr>
 							<th th:text="#{tabela.Id}" class="av-table-vinhos-col-codigo" style="width: 60px; text-align: center;">ID</th>
-							<th style="width: 70px;" th:text="#{tabela.nome}">Nome</th>
+							<th  th:text="#{tabela.nome}">Nome</th>
+							<th style="width: 80px;" th:text="#{usuario.login}">login</th>
+							<th  th:text="#{usuario.email}">Email</th>
 							<th style="width: 70px;" >Senha</th>
-							<th class="av-table-vinhos-col-tipo" >Telefone</th>
+							<th class="av-table-vinhos-col-tipo" >Telefones</th>
 							<th class="av-table-vinhos-col-valor" >Loja</th>
 							<th class="av-table-vinhos-col-valor" style="width: 80px;" >Tipo</th>
 					
+							<th class="av-table-vinhos-col-icons"  style="width: 60px; text-align: center;" sec:authorize="hasRole('ROLE_ADMINISTRADOR')" ></th>
 							<th class="av-table-vinhos-col-icons"  style="width: 60px; text-align: center;"  ></th>
 						</tr>
 					</thead>
@@ -66,21 +84,37 @@
 						<tr th:each="usuario : ${usuarios}">
 							<td th:text=${usuario.id} class="text-center">1</td>
 							<td>
-							<a th:title="#{tabela.alterar}" th:href="@{/usuarios/{id}(id=${usuario.id})}" th:text="${usuario.nome}" >Roberto</a>
-							<!-- <span th:text="${vinho.nome}" sec:authorize="not hasRole('ROLE_CADASTRAR_VINHO')"></span> -->
+							<a th:title="#{tabela.alterar}" th:href="@{/usuarios/{id}(id=${usuario.id})}" th:text="${usuario.nome}" sec:authorize="hasRole('ROLE_ADMINISTRADOR')" >Roberto</a>
+							<span th:text="${usuario.nome}" sec:authorize="not hasRole('ROLE_ADMINISTRADOR')"></span>
 							</td>
-							<td th:text="${usuario.password}"></td>
-							<td th:text="${usuario.telefone}"></td>
+							<td th:text="${usuario.login}"></td>
+							<td th:text="${usuario.email}"></td>
+							<td>
+							    <div sec:authorize="hasRole('ROLE_ADMINISTRADOR')" >
+							         <div th:if="${usuario.tipo.idTipo == 2} ? ${usuario.tipo.idTipo == 2}">
+							              <span >*******</span>
+							         </div>
+							         <div th:if="${usuario.tipo.idTipo == 0} or ${usuario.tipo.idTipo == 1}">
+							              <span  th:text="${usuario.password}"></span>
+							         </div> 							          
+							    </div>
+							<span sec:authorize="not hasRole('ROLE_ADMINISTRADOR')">*******</span>
+							</td>
+							<td th:text="|${usuario.telefone}, ${usuario.celular}|"></td>
 							<td th:text="${usuario.loja.nome}"></td>
 							<td th:text="#{|tipo.${usuario.tipo}|}">4545544</td>
 							
-							<td class="text-center" >
+							<td class="text-center" sec:authorize="hasRole('ROLE_ADMINISTRADOR')">
 							<i class="fa  fa-trash" th:title="#{tabela.excluir}" style="cursor: pointer" 
 							data-toggle="modal" data-target="#confirmaExclusaoModal"
 							data:nome="${usuario.nome}"
-							data:url-delete="@{/usuario/{id}(id=${usuario.id})}"
+							data:url-delete="@{/usuarios/{id}(id=${usuario.id})}"
 							data:classe="${classe}"></i>
 								</td>
+						<td class="text-center">
+						    <a class="fa  fa-list" th:href="@{/usuarios/detalhes/{id}(id=${usuario.id})}"  title="Detalhes do usuário"></a>
+						
+						</td>		
 						</tr>
 						<tr th:if="${usuarios.empty}">
 							<td colspan="6">Nenhum usuário cadastrado</td>

@@ -2,14 +2,21 @@ package com.developerstaff.model;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotBlank;
@@ -30,8 +37,8 @@ public class Equipamento implements Serializable {
 	private String nome;
 	@NotBlank
 	private String descricao;
-	@NotBlank
-	private String setor;
+	@NotNull
+	private Setor setor;
 	@NotBlank
 	private String local;
 	@NotNull
@@ -40,6 +47,10 @@ public class Equipamento implements Serializable {
 	private Long patrimonio;
 	@NumberFormat(pattern = "#,##0.00")
 	private BigDecimal valor;
+	@NotNull
+	private List<Componente> componentes = new ArrayList<>();
+
+	private boolean campo;
 
 	/* Inicio gets e sets */
 	@Id
@@ -52,6 +63,7 @@ public class Equipamento implements Serializable {
 		this.id = id;
 	}
 
+	@Column(unique = true)
 	public String getNome() {
 		return nome;
 	}
@@ -68,11 +80,13 @@ public class Equipamento implements Serializable {
 		this.descricao = descricao;
 	}
 
-	public String getSetor() {
+	@OneToOne
+	@JoinColumn(name = "id_setor")
+	public Setor getSetor() {
 		return setor;
 	}
 
-	public void setSetor(String setor) {
+	public void setSetor(Setor setor) {
 		this.setor = setor;
 	}
 
@@ -110,6 +124,46 @@ public class Equipamento implements Serializable {
 		this.valor = valor;
 	}
 
+	@Transient
+	public boolean isCampo() {
+		return campo;
+	}
+
+	public void setCampo(boolean campo) {
+		this.campo = campo;
+	}
+
+	@ManyToMany(cascade = CascadeType.PERSIST)
+	public List<Componente> getComponentes() {
+		return componentes;
+	}
+
+	public void setComponentes(List<Componente> componentes) {
+		this.componentes = componentes;
+	}
+
+	@Transient
+	public String getComponentesTexto() {
+		String texto = "";
+
+		List<Componente> lista = componentes;
+        
+		
+		for(int i = 0; i<lista.size(); i++){
+			
+			Componente c = lista.get(i);
+			if(i == lista.size() -1){
+				texto = texto+c.getNome()+".";
+			}else{
+				texto = texto+c.getNome()+", ";
+			}
+		}
+
+		
+
+		return texto;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -134,7 +188,6 @@ public class Equipamento implements Serializable {
 			return false;
 		return true;
 	}
-
 
 	/*
 	 * Fim gets e sets e Comeco Equals e HashCode

@@ -1,14 +1,19 @@
 package com.developerstaff.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
@@ -34,6 +39,8 @@ public class Loja implements Serializable {
 	private String descricao;
     @Valid
 	private Endereco endereco;
+    
+    List<Setor> setores = new ArrayList<>();
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -45,7 +52,7 @@ public class Loja implements Serializable {
 		this.id = id;
 	}
 
-	@Column(name = "numero_loja", nullable = true)
+	@Column(name = "numero_loja",unique=true, nullable = true)
 	public Long getNumeroLoja() {
 		return numeroLoja;
 	}
@@ -82,6 +89,36 @@ public class Loja implements Serializable {
 	@Column(nullable = true)
 	public void setDescricao(String descricao) {
 		this.descricao = descricao;
+	}
+	
+	@ManyToMany(cascade = CascadeType.PERSIST)
+	public List<Setor> getSetores() {
+		return setores;
+	}
+
+	public void setSetores(List<Setor> setores) {
+		this.setores = setores;
+	}
+	@Transient
+	public String getSetoresTexto() {
+		String texto = "";
+
+		List<Setor> lista = setores;
+        
+		
+		for(int i = 0; i<lista.size(); i++){
+			
+			Setor s = lista.get(i);
+			if(i == lista.size() -1){
+				texto = texto+s.getNomeSetor()+".";
+			}else{
+				texto = texto+s.getNomeSetor()+", ";
+			}
+		}
+
+		
+
+		return texto;
 	}
 
 	@Override

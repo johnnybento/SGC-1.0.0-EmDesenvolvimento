@@ -14,9 +14,74 @@
 			</div>
 
 			<div class="container-fluid">
+			<fieldset ><legend style="font-size: 18px">Selecione<span th:if="${logon.tipo.idTipo != 0}"> a loja </span><span th:if="${chamado.loja != null}"> o Equipamento</span></legend></fieldset>
+			   
+			   <form style="padding-bottom: 30px" method="GET" th:action="@{/chamados/novo}" th:object="${chamado}" th:if="${logon.tipo.idTipo != 0}">
+			                               
 
-				<form method="POST" class="form-vertical  js-form-loading" th:object="${chamado}" 
-				th:action="@{/chamados/novo}">
+     			<div class="alert  alert-success"
+					th:if="${!#strings.isEmpty(mensagem)}">
+					<span th:text="${mensagem}"></span><br />
+
+   				</div>			       
+			       
+			        <div class="row">
+                   
+                        <div class="col-lg-6">
+                            <div class="input-group">
+                                 <!-- <input type="text" class="form-control" placeholder="Search for..."> -->
+                           <select th:field="*{loja}" id="select-chamado-loja" class="form-control">
+	                               <option value="">Escolha a Loja</option>
+	                               <option th:each="loja : ${lojas}"
+	                                       th:value="${loja.id}"
+	                                       th:text="${loja.nome}"    ></option>						    
+						    
+						    </select>
+                                 <span class="input-group-btn">
+                                       <button class="btn btn-danger" type="submit">Go!</button>
+                                 </span>
+                             </div><!-- /input-group -->
+                         </div><!-- /.col-lg-6 -->
+                   </div><!-- /.row -->
+			  
+			  <!-- </fieldset> -->
+			   </form>
+			   <form style="padding-bottom: 30px" method="GET" th:action="@{/chamados/novo}" th:object="${chamado}" th:if="${chamado.loja != null}">
+     			     <div th:if="${logon.tipo.idTipo == 0}">
+     			          <div  class="alert  alert-success"
+				        	     th:if="${!#strings.isEmpty(mensagem)}">
+					             <span th:text="${mensagem}"></span><br />
+
+   				          </div>		
+                    </div>
+			       
+			        <div class="row">
+                   
+                        <div class="col-lg-6">
+                            <div class="input-group">
+                                 <!-- <input type="text" class="form-control" placeholder="Search for..."> -->
+                           <select th:type="submit" th:field="*{equipamento}" id="select-chamado-loja" class="form-control">
+	                               <option value="">Escolha o equipamento</option>
+	                               <option th:each="equipamento : ${equipamentos}"
+	                                       th:value="${equipamento.id}"
+						                     th:text="|${equipamento.nome}-${equipamento.local}|" ></option>					    
+						    
+						    </select>
+                                 <span class="input-group-btn">
+                                       <button class="btn btn-danger" type="submit">Go!</button>
+                                 </span>
+                                 
+                                 <input type="hidden" th:field="*{loja}" th:value="chamado.loja.id" >
+                             </div><!-- /input-group -->
+                         </div><!-- /.col-lg-6 -->
+                   </div><!-- /.row -->
+			  
+			  <!-- </fieldset> -->
+			   </form>			   
+			
+
+				<form  method="POST" class="form-vertical  js-form-loading" th:object="${chamado}" 
+				th:action="@{/chamados/novo}" th:if="${logon.loja != null} ? ${chamado.equipamento != null}">
 				
 					<div class="alert  alert-danger  alert-dismissible" role="alert" th:if="${#fields.hasAnyErrors()}">
 					<button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -33,6 +98,21 @@
 					<span th:text="${mensagem}"></span><br />
 
    				</div>
+   		<fieldset ><legend style="font-size: 18px">Preencha os campos abaixo:</legend>
+   		
+           <div class="row">
+                 <div class="col-sm-6">
+					  <div class="form-group">
+						   <label for="select-chamado-componente">Componente com defeito</label>
+						   <select th:field="*{componente}" id="select-chamado-componente" class="form-control" >
+	                               <option value="">Escolha o componente</option>
+	                               <option th:each="componente : ${componentes}"
+	                                       th:value="${componente.nome}"
+	                                       th:text="${componente.nome}"    ></option>
+	                       </select>				 
+					 </div>
+                 </div>
+              </div>        		
    			<div class="form-group">
 					<label for="textarea-chamado-descricao">Descrição</label>
 					<textarea th:field="*{descricao}" id="textarea-chamado-descricao" maxlength="600" placeholder="Exemplo: Descreva o defeito do equipamento" rows="3"
@@ -52,42 +132,40 @@
 	                       </select>				 
 					 </div>
                  </div>
-                                  <div class="col-sm-6">
-					  <div class="form-group">
-						   <label for="select-chamado-loja">Loja</label>
-						    <select  th:field="*{loja}" id="select-chamado-loja" class="form-control">
-						             <option value="">Escolha a Loja</option>
-						             <option th:each="loja : ${lojas}"
-						                     th:value="${loja.id}"
-						                     th:text="${loja.nome}" ></option>
+                <div th:if="${logon.tipo.idTipo == 0}"> 
+                    <div class="col-sm-6">
+					     <div class="form-group">
+						   <label for="input-chamado-loja">Loja</label>
+						    <input  th:value="${logon.loja.nome}" id="input-chamado-loja" readonly="readonly" class="form-control">
 						    
-						    </select>
-					  </div>
-                </div> 
-                 <div class="col-sm-6">
-					  <div class="form-group">
-						   <label for="select-chamado-equipamento">Equipamento</label>
-						    <select   th:field="*{equipamento}" id="select-chamado-equipamento" class="form-control">
-						             <option value="">Escolha o Equipamento</option>
-						             <option th:each="equipamento : ${equipamentos}"
-						                     th:value="${equipamento.id}"
-						                     th:text="|${equipamento.nome}-${equipamento.local}|" ></option>
-						    
-						    </select>
-					  </div>
+			           </div>
+			        </div> 
                 </div>
+                <div th:if="${logon.tipo.idTipo != 0}"> 
+                    <div class="col-sm-6">
+					     <div class="form-group">
+						   <label for="input-chamado-loja">Loja</label>
+						    <input  th:value="${chamado.loja.nome}" id="input-chamado-loja" readonly="readonly" class="form-control">
+						    
+			           </div>
+			        </div> 
+                </div>                
+                 
+                    <div class="col-sm-6">
+					     <div class="form-group">
+						   <label for="input-chamado-loja">Equipamento</label>
+						    <input  th:value="|${chamado.equipamento.nome}-${chamado.equipamento.local}|" id="input-chamado-loja" readonly="readonly" class="form-control">
+						    
+			           </div>
+			        </div> 
+                               
                  <div class="col-sm-6">
 					  <div class="form-group">
-						   <label for="select-chamado-usuario">Usuário</label>
-						    <select  th:field="*{usuario}" id="select-chamado-usuario" class="form-control">
-						             <option value="">Escolha o usuario</option>
-						             <option th:each="usuario : ${usuarios}"
-						                     th:value="${usuario.id}"
-						                     th:text="${usuario.nome}" ></option>
-						    
-						    </select>
+						   <label for="input-chamado-usuario">Usuário</label>
+						    <input   id="input-chamado-usuario" th:value="${logon.nome}" readonly="readonly" class="form-control"/>
 					  </div>
-                 </div>        
+                 </div>
+                       
         
            </div>	     
 
@@ -95,10 +173,26 @@
 
 						<input th:field="*{id}" type="hidden" />
 					</div>
-					
+                    <div>
 
+						<input th:field="*{usuario}" th:value="${chamado.usuario.id}" type="hidden" />
+					</div>					
+					
+                    <div>
+
+						<input th:field="*{equipamento}" th:value="${chamado.equipamento.id}" type="hidden" />
+					</div>					
+					<div th:if="${logon.tipo.idTipo == 0}">
+
+						<input th:field="*{loja}" th:value="${chamado.loja.id}" type="hidden" />
+					</div>
+		           <div th:if="${logon.tipo.idTipo != 0}">
+
+						<input th:field="*{loja}" th:value="${chamado.loja.id}" type="hidden" />
+					</div>
+            </fieldset>
 					<div class="form-group">
-						<button class="btn  btn-primary" type="submit">Salvar</button>
+						<button class="btn  btn-primary" type="submit">Criar</button>
 					</div>
 
 				</form>

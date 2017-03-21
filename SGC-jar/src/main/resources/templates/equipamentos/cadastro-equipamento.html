@@ -14,9 +14,37 @@
 			</div>
 
 			<div class="container-fluid">
+                
+                <form method="GET" class="form-vertical  js-form-loading" th:object="${equipamento}" 
+				th:action="@{/equipamentos/novo}" th:if="${not equipamento.campo}">
+				 <div class="alert  alert-success"
+					th:if="${!#strings.isEmpty(mensagem)}">
+					<span th:text="${mensagem}"></span><br />
+
+   				</div>	
+                <div class="row">
+                     <div class="col-lg-6">
+                          <div class="input-group">
+						       <select  th:field="*{loja}" id="select-equipamento-loja" class="form-control">
+						             <option value="">Escolha a Loja</option>
+						             <option th:each="loja : ${lojas}"
+						                     th:value="${loja.id}"
+						                     th:text="${loja.nome}" ></option>
+						    
+						    </select>
+						    <span class="input-group-btn">
+                                  <button class="btn btn-default" type="submit">Go!</button>
+                            </span>
+					  </div>
+					 
+                </div>
+                           
+		</div>
+               
+			</form>
 
 				<form method="POST" class="form-vertical  js-form-loading" th:object="${equipamento}" 
-				th:action="@{/equipamentos/novo}">
+				th:action="@{/equipamentos/novo}" th:if="${equipamento.campo}">
 				
 					<div class="alert  alert-danger  alert-dismissible" role="alert" th:if="${#fields.hasAnyErrors()}">
 					<button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -36,34 +64,38 @@
    			<div class="row">
                  <div class="col-sm-6">
 					  <div class="form-group">
+					     
+						   <label for="input-equipamento-loja">Loja          <a style="padding-left: 10px" th:href="@{/equipamentos/novo}" >Redefinir</a></label>
+                           <input class="form-control" id="input-equipamento-loja" th:value="${equipamento.loja.nome}" readonly="readonly" type="text"/>
+                           
+					  </div>
+                </div>     			
+                 <div class="col-sm-6">
+					  <div class="form-group">
 						   <label for="input-equipamento-nome">Nome</label>
 						   <input	th:field="*{nome}" id="input-equipamento-nome" maxlength="50" placeholder="Exemplos: pdma01 ou tel01" type="text" class="form-control" />
 					 </div>
                  </div>
                  <div class="col-sm-6">
 					  <div class="form-group">
+						   <label for="select-equipamento-setor">Setor</label>
+						   <select class="form-control" id="select-equipamento-setor" th:field="*{setor}">
+						           <option value="">Selecione o setor</option>
+						           <option th:each="setor : ${setores}"
+						                   th:value="${setor.id}"
+						                   th:text="${setor.nomeSetor}"></option>
+						   
+						   </select>
+					 </div>
+                 </div>                 
+                 <div class="col-sm-6">
+					  <div class="form-group">
 						   <label for="input-equipamento-local">Local</label>
 						    <input	th:field="*{local}" id="input-equipamento-local" maxlength="50" placeholder="Exemplos: Caixa 01 ou Telefone Caixa Central" type="text" class="form-control" />
 					  </div>
                 </div>
-                 <div class="col-sm-6">
-					  <div class="form-group">
-						   <label for="input-equipamento-setor">Setor</label>
-						   <input	th:field="*{setor}" id="input-equipamento-setor" maxlength="50" placeholder="Exemplos: Brinquedos, CPD, Armarinhos e etc" type="text" class="form-control" />
-					 </div>
-                 </div>
-                 <div class="col-sm-6">
-					  <div class="form-group">
-						   <label for="select-equipamento-loja">Loja</label>
-						    <select  th:field="*{loja}" id="select-equipamento-loja" class="form-control">
-						             <option value="">Escolha a Loja</option>
-						             <option th:each="loja : ${lojas}"
-						                     th:value="${loja.id}"
-						                     th:text="${loja.nome}" ></option>
-						    
-						    </select>
-					  </div>
-                </div>                
+
+              
               
            </div>	     
 					<div class="form-group">
@@ -83,6 +115,40 @@
 
 						<input th:field="*{id}" type="hidden" />
 					</div>
+	                    <div>
+
+						<input th:field="*{loja}"  th:value="equipamento.loja.id" type="hidden" />
+					</div>
+					
+		            <div class="col-sm-8" th:if="${equipamento.id != null} ? ${equipamento.id != null}" style="padding-top: 20px">
+                         <fieldset class="form-group" style="padding-top: 5px">
+                             <legend>Selecione os componentes, peças e etc...</legend>
+ 				    <div class="col-sm-12">
+						<div class="form-group">                                     
+                                    <a href="#" data-toggle="modal" data-target="#modalcomponente" class="btn btn-success" >Adicionar Componente <i  class="fa  fa-plus"> </i></a>
+                                    <a href="#" data-toggle="modal" data-target="#modalComponenteRemover" class="btn btn-danger" >Remover Componente <i  class="fa  fa-minus"> </i></a>
+                        </div>
+                   </div>       
+                              
+                                  <th:block th:each="componente : ${componentes}">
+                                        
+                               <div class="col-sm-3">
+						             <div class="form-group">       
+                                             <input class="checkbox-inline" type="checkbox"  th:field="*{componentes}" th:value="${componente.id}"/>
+                                             <label th:for="${#ids.prev('componentes')}" class="checkbox-inline" style="font-size: 20px"><span th:text="${componente.nome}"></span> 
+                                              
+                                             </label>
+                                     </div>                                                      
+                               </div>              
+
+                                       
+                                 </th:block> 
+                                   
+                                 <div th:if="${componentes.empty}">
+                                   <h4>Nenhum Componente Cadastrado</h4>
+                                 </div>    
+                           </fieldset>
+                   </div> 										
 					</div>
 
 					<div class="form-group">
@@ -91,6 +157,101 @@
 
 				</form>
 			</div>
+            <div class="modal fade" tabindex="-1" id="modalComponenteRemover" role="dialog" aria-labelledby="gridSystemModalLabel">
+            <div class="modal-dialog" role="document">
+                 <div class="modal-content">
+                      <div class="modal-header">
+                           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                   <span aria-hidden="true">&times;</span>
+                           </button>
+                           <h4 class="modal-title" id="gridSystemModalLabel">Remoção de componente</h4>
+                     </div>
+                <form th:action="@{/equipamentos/componentes}" method="POST" th:object="${componente}"> 
+                  <input type="hidden" name="_method" value="DELETE" />
+                  
+                    <div class="modal-body">
+
+                        
+                             <div class="form-group">    
+                                  <label for="idComponente">Componentes</label> 
+                                  <select  th:field="*{id}" class="form-control" id="idComponente">
+                                          <option value="">Escolha um Componente</option>
+                                          <option th:each="componente : ${componentes}"
+                                                  th:value="${componente.id}"
+                                                  th:text="${componente.nome}" ></option>
+                                          
+                                  </select> 
+                            </div>       
+                             <span>Obs.:Ao remover este componente, será removido de todos os equipamentos</span> 
+                     
+                     
+                     <div>
+						<input  th:value="${equipamento.id}" type="hidden" name="idEquipamento"/>
+					</div>  
+
+
+                   </div>
+                  <div class="modal-footer">
+                       <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                       <button type="submit" class="btn btn-primary">Remover um Componentes</button>
+                  </div>
+             
+             </form>
+             
+             </div><!-- /.modal-content -->
+          </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+    		<div class="modal fade" tabindex="-1" id="modalcomponente" role="dialog" aria-labelledby="gridSystemModalLabel">
+            <div class="modal-dialog" role="document">
+                 <div class="modal-content">
+                      <div class="modal-header">
+                           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                   <span aria-hidden="true">&times;</span>
+                           </button>
+                           <h4 class="modal-title" id="gridSystemModalLabel">Cadastro de Componente</h4>
+                     </div>
+                <form th:action="@{/equipamentos/componentes}" method="POST" th:object="${componente}"> 
+                    <div class="modal-body">
+
+                        
+                             <div class="form-group">    
+                                  <label for="idSetor">Componente</label> 
+                                  <input class="form-control" id="idSetor" th:field="*{nome}"/>
+                            </div>
+					<div>
+						<input  th:value="${equipamento.id}" type="hidden" name="idEquipamento"/>
+					</div>                        
+                      
+
+
+                   </div>
+                  <div class="modal-footer">
+                       <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                       <button type="submit" class="btn btn-primary">Adicionar um Componente</button>
+                  </div>
+             
+             </form>
+             
+             </div><!-- /.modal-content -->
+          </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+	
+	<th:block layout:fragment="javascript-extra">
+	
+		<script >
+         $('#modalcomponente').on('show.bs.modal', function (event) {
+        	var button = $(event.relatedTarget);
+ 			 
+         });
+         $('#modalComponenteRemover').on('show.bs.modal', function (event) {
+         	var button = $(event.relatedTarget);
+  			 
+          });
+       </script>  
+	</th:block>			
+			
+			
+			
 </section>
 </body>
 </html>

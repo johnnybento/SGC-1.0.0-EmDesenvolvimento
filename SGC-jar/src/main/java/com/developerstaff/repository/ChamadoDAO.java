@@ -1,5 +1,6 @@
 package com.developerstaff.repository;
 
+import java.util.Calendar;
 import java.util.List;
 
 import org.springframework.data.domain.Sort;
@@ -14,6 +15,10 @@ import com.developerstaff.model.Status;
 @Repository
 public interface ChamadoDAO extends JpaRepository<Chamado, Long>{
 
+	
+	public List<Chamado> findByLojaNumeroLoja(Long numeroLoja);
+	
+	public Chamado findByIdAndLojaNumeroLoja(Long id,Long numeroLoja);
 
 	
 	public List<Chamado>findByStatus(Status status);
@@ -26,8 +31,7 @@ public interface ChamadoDAO extends JpaRepository<Chamado, Long>{
 	
 	@Query("select c from Chamado c order by c.datas.dataCriacao desc")
 	public List<Chamado> selectDataCriacaoOrderBy();
-	/*Descrição, Prioridade, Loja, Equipamento, Técnico, 'Aberto por'  e Status"
-*/	
+	
 	@Query("select c from Chamado c where c.loja.nome  like ?1%")
 	public List<Chamado> procuraByLoja(String lojaNome,Sort sort);
 	
@@ -43,22 +47,47 @@ public interface ChamadoDAO extends JpaRepository<Chamado, Long>{
 	@Query("select c from Chamado c where "
 			+ "UPPER(c.status) like UPPER(:texto) or "
 			+ "UPPER(c.prioridade)  like UPPER(:texto) or "
-			+ "UPPER(c.datas.dataCriacao)  like UPPER(:texto) or "
-			+ "UPPER(c.datas.dataAtendimento)  like UPPER(:texto) or "
-			+ "UPPER(c.datas.dataFinalizacao)  like UPPER(:texto) or "
 			+ "UPPER(c.descricao)  like UPPER(:texto) or "
 			+ "UPPER(c.equipamento.nome)  like UPPER(:texto) or "
 			+ "UPPER(c.equipamento.local)  like UPPER(:texto) or "
 			+ "UPPER(c.loja.nome)  like UPPER(:texto) or "
-			+ "UPPER(c.solucao.descricaoSolucao)  like UPPER(:texto) or "
-			+ "UPPER(c.usuario.nome)  like UPPER(:texto) or "
+			+ "UPPER(c.usuario.nome)  like UPPER(:texto)")
+	public List<Chamado> procuraByTudoSemTecnico(@Param("texto") String texto);
+		
+	@Query("select c from Chamado c where "
 			+ "UPPER(c.tecnico.nome)  like UPPER(:texto)")
-	public List<Chamado> procuraByTudo(@Param("texto") String texto);
+	public List<Chamado> procuraByTecnico(@Param("texto") String texto);
+	
+	@Query("select c from Chamado c where "
+			+ "UPPER(c.tecnico.nome)  like UPPER(:texto)"
+			+ "and c.loja.numeroLoja = :id")
+	public List<Chamado> procuraByTecnicoComId(@Param("texto") String texto, @Param("id") Long id);
+	
+	@Query("select c from Chamado c where "
+			+ "UPPER(c.status) like UPPER(:texto) and c.loja.numeroLoja = :id or "
+			+ "UPPER(c.prioridade)  like UPPER(:texto) and c.loja.numeroLoja = :id or "
+			+ "UPPER(c.descricao)  like UPPER(:texto) and c.loja.numeroLoja = :id or "
+			+ "UPPER(c.equipamento.nome)  like UPPER(:texto) and c.loja.numeroLoja = :id or "
+			+ "UPPER(c.equipamento.local)  like UPPER(:texto) and c.loja.numeroLoja = :id or "
+			+ "UPPER(c.loja.nome)  like UPPER(:texto) and c.loja.numeroLoja = :id or "
+			//+ "UPPER(c.solucao.descricaoSolucao)  like UPPER(:texto) or "
+			+ "UPPER(c.usuario.nome)  like UPPER(:texto)"
+			+ "and c.loja.numeroLoja = :id")
+	public List<Chamado> procuraByTudoComId(@Param("texto") String texto, @Param("id") Long id);
 	
 	
+	@Query("select c from Chamado c where c.datas.dataCriacao between :dataInicio and :dataFim")
+	public List<Chamado> pegaDatasCriacao(@Param("dataInicio") Calendar dataInico,@Param("dataFim") Calendar dataFim);
 	
-	public List<Chamado> findByDescricaoContainingIgnoreCaseOrEquipamentoNomeContainingIgnoreCaseOrLojaNomeContainingIgnoreCaseOrUsuarioNomeContainingIgnoreCaseOrTecnicoNomeContainingIgnoreCase
-	(String descricao, String nome,String nomeLoja,String usuario,String tecnico);
+	@Query("select c from Chamado c where c.datas.dataAtendimento between :dataInicio and :dataFim")
+	public List<Chamado> pegaDatasAtendimento(@Param("dataInicio") Calendar dataInico,@Param("dataFim") Calendar dataFim);
+	
+	@Query("select c from Chamado c where c.datas.dataFinalizacao between :dataInicio and :dataFim")
+	public List<Chamado> pegaDatasFinalizacao(@Param("dataInicio") Calendar dataInico,@Param("dataFim") Calendar dataFim);
+	
+	public List<Chamado> findByLojaNome(String nome);
+	
+	
 	
 
 	

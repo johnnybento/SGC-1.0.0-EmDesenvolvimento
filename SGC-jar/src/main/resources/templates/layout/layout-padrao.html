@@ -69,7 +69,7 @@
 							<li><a href="#">Pagamentos</a></li>
 						</ul></li>
 
-					<li><a href="#"><em class="fa  fa-sign-out"></em></a></li>
+					<li><a th:href="@{/logout}" title="Sair"><em class="fa  fa-sign-out"></em></a></li>
 				</ul>
 
 			</div>
@@ -88,9 +88,9 @@
 						       </a>
 						 </li>
 
-						<li class="aw-menu__item  is-active">
+						<li class="aw-menu__item  is-active" sec:authorize="hasRole('ROLE_ADMINISTRADOR')">
 						   <a href="#">
-						      <i class="fa  fa-fw  fa-file-text"></i>
+						      <i class="fa  fa-fw  fa-file-text" ></i>
 						      <span th:text="#{menu.cadastros}">Cadastros</span>
 						      <i 	class="aw-menu__navigation-icon  fa"></i>
 						    </a>
@@ -110,7 +110,7 @@
 							
 							</li>
 
-						<li class="aw-menu__item  is-expanded">
+						<li class="aw-menu__item  is-expanded" sec:authorize="hasAnyRole('ROLE_ADMINISTRADOR','ROLE_TECNICO')">
 						    <a href="#">
 						        <i	class="fa  fa-fw  fa-file-text"></i><span th:text="#{menu.pesquisas}">Pesquisas</span>
 								<i class="aw-menu__navigation-icon  fa"></i>
@@ -229,6 +229,44 @@
 	
 	
 	</th:block>
+<!-- 	<th:block layout:fragment="modal-confirmar">
+	       <div class="modal  fade" id="confirmaFinalizar" tabindex="-1" role="dialog">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<form  th:action="@{/chamados/finalizar/{id}(id=${chamado.id})}" method="POST" th:object="${solucao}">
+					
+
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal"
+								aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+							<h4 class="modal-title" id="myModalLabel" ><span> A</span></h4>
+						</div>
+						<div class="modal-body">
+						
+						
+						<input id="tipoSolucao" th:field="*{tipoSolucao}" type="hidden" />
+						<input id="descricaoSolucao" th:field="*{descricaoSolucao}" type="hidden" />
+						<input id="outrosValores" th:field="*{outrosValores}" type="hidden" />
+						<input id="valorTransporte" th:field="*{valorTransporte}" type="hidden" />
+						
+						
+						
+							<span>Tem certeza?</span>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn  btn-default"
+								data-dismiss="modal">Cancelar</button>
+							<button type="submit" class="btn  btn-primary" ><span>A</span></button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</th:block> -->
+	
+	
 	<th:block layout:fragment="javascript-extra">
 	 
 	
@@ -241,8 +279,15 @@
 
 		});
 		jQuery('.cep').mask("99999-999");
-		jQuery('.telefone').mask("(99) 99999-9999");
+		jQuery('.telefone').mask("(99) 9999-9999");
+		jQuery('.celular').mask("(99) 99999-9999");
 		$('.numeros').mask('0#');
+		$(".lowercase").keyup(function () {
+
+		    var ucase = $(this).val().toLowerCase()
+		    $(this).val(ucase);
+
+		 });
 		
 		
 	</script>

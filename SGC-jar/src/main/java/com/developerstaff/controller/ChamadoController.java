@@ -7,6 +7,8 @@ import java.util.List;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,8 +18,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.developerstaff.business.ChamadoBO;
 import com.developerstaff.model.Chamado;
+import com.developerstaff.model.Componente;
 import com.developerstaff.model.Datas;
+import com.developerstaff.model.Equipamento;
 import com.developerstaff.model.Prioridade;
 import com.developerstaff.model.ReAbrir;
 import com.developerstaff.model.Solucao;
@@ -27,6 +32,7 @@ import com.developerstaff.model.Usuario;
 import com.developerstaff.repository.ChamadoDAO;
 import com.developerstaff.repository.EquipamentoDAO;
 import com.developerstaff.repository.LojaDAO;
+import com.developerstaff.repository.SolucaoDAO;
 import com.developerstaff.repository.UsuarioDAO;
 import com.developerstaff.repository.filter.ChamadoFiltro;
 import com.developerstaff.repository.filter.UsuarioFiltro;
@@ -43,26 +49,65 @@ public class ChamadoController {
 	private UsuarioDAO daoUser;
 	@Autowired
 	private ChamadoDAO dao;
+	@Autowired
+	private SolucaoDAO daoSolu;
+	/*
+	 * @Autowired private ComponenteDAO daoComp;
+	 */
+
+	private ChamadoBO bo;
 
 	@GetMapping("/novo")
-	public ModelAndView novo(Chamado chamado) {
+	public ModelAndView novo(Chamado chamado, @AuthenticationPrincipal User user) {
+
+		Usuario userlogon = daoUser.findByLogin(user.getUsername());
 
 		ModelAndView mv = new ModelAndView("chamados/criar-chamado");
+		List<Equipamento> equipamentos;
+		List<Componente> comps;
+		if (userlogon.getTipo().idTipo == 0) {
+			equipamentos = daoEqui.findByLojaId(userlogon.getLoja().getId());
+			chamado.setLoja(userlogon.getLoja());
+			chamado.setUsuario(userlogon);
+		} else {
+			if (chamado.getLoja() != null) {
+				equipamentos = daoEqui.findByLojaId(chamado.getLoja().getId());
+				chamado.setUsuario(userlogon);
+			} else {
+				userlogon.setLoja(null);
+
+				equipamentos = daoEqui.findAll();
+			}
+		}
+
+		if (chamado.getEquipamento() != null) {
+
+			comps = chamado.getEquipamento().getComponentes();
+			Componente c = new Componente();
+			c.setNome("Outros");
+			comps.add(c);
+		} else {
+			comps = new ArrayList<>();
+		}
+
 		mv.addObject("prioridades", Prioridade.values());
+		mv.addObject("componentes", comps);
 		mv.addObject("usuarios", daoUser.findAll());
 		mv.addObject("lojas", daoLj.findAll());
-		mv.addObject("equipamentos", daoEqui.findAll());
+		mv.addObject("equipamentos", equipamentos);
+		mv.addObject("logon", userlogon);
 		mv.addObject(chamado);
 
 		return mv;
 	}
 
 	@PostMapping("/novo")
-	public ModelAndView salvar(@Valid Chamado chamado, BindingResult result, RedirectAttributes attributes) {
+	public ModelAndView salvar(@Valid Chamado chamado, BindingResult result, RedirectAttributes attributes,
+			@AuthenticationPrincipal User user) {
 		ModelAndView mv = new ModelAndView("redirect:/chamados/novo");
 
 		if (result.hasErrors()) {
-			return novo(chamado);
+			return novo(chamado, user);
 
 		}
 		attributes.addFlashAttribute("mensagem", "Chamado criado com sucesso!");
@@ -75,32 +120,12 @@ public class ChamadoController {
 		return mv;
 	}
 
-	/*
-	 * @GetMapping public ModelAndView listGlobal() {
-	 * 
-	 * ModelAndView mv = new ModelAndView("chamados/global-chamado");
-	 * mv.addObject("chamados", dao.findAll());
-	 * 
-	 * return mv;
-	 * 
-	 * }
-	 */
-
 	@GetMapping(value = "/status/{status}")
 	public ModelAndView filterByStatus(@PathVariable String status) {
 		ModelAndView mv = new ModelAndView("chamados/global-chamado");
 		mv.addObject("chamados", dao.findByStatus(Status.valueOf(status)));
 		return mv;
 	}
-
-	/*
-	 * @GetMapping(value="/{orderby}") public ModelAndView
-	 * orderbyChamado(@PathVariable String orderby){ ModelAndView mv = new
-	 * ModelAndView("chamados/global-chamado"); ChamadoBO bo = new ChamadoBO();
-	 * 
-	 * List<Chamado> lista = bo.obterListaOrdenada(orderby);
-	 * mv.addObject("chamados", lista); return mv; }
-	 */
 
 	@GetMapping("/prioridade")
 	public ModelAndView orderByPrioridade() {
@@ -117,35 +142,26 @@ public class ChamadoController {
 	}
 
 	@GetMapping
-	public ModelAndView listaGlobal(ChamadoFiltro chamadoFiltro) {
+	public ModelAndView listaGlobal(@Valid ChamadoFiltro chamadoFiltro, @AuthenticationPrincipal User user) {
+
+		Usuario userlogon = daoUser.findByLogin(user.getUsername());
+
 		ModelAndView mv = new ModelAndView("chamados/global-chamado");
 		mv.addObject("tecnicos", daoUser.getTecnicos());
 		mv.addObject("tecnico", new Usuario());
-		mv.addObject("filtro",chamadoFiltro);
+		mv.addObject("lojas", daoLj.findAll());
+		mv.addObject("usuarios", daoUser.findAll());
+		mv.addObject("filtro", chamadoFiltro);
+		mv.addObject("prioridades", Prioridade.values());
+		mv.addObject("statuss", Status.values());
+		mv.addObject("logado", userlogon);
 
-		if (chamadoFiltro.getId() != null) {
-			List<Chamado> lista = new ArrayList<>();
+		bo = new ChamadoBO();
 
-			lista.add(dao.findOne(chamadoFiltro.getId()));
-			mv.addObject("chamados", lista);
-		} else if (chamadoFiltro.getAtributo() != null) {
+		mv.addObject("chamados", bo.fazFiltroChamados(chamadoFiltro, userlogon, dao));
 
-			mv.addObject("chamados", dao.procuraByTudo("%"+chamadoFiltro.getAtributo()+"%"));
-
-		} else {
-			mv.addObject("chamados", dao.findAll());
-
-		}
-		System.out.println(chamadoFiltro.getIdFiltro());
 		return mv;
 	}
-	
-/*	@PostMapping
-	public ModelAndView listaGlobalFiltro(ChamadoFiltro chamadoFiltro){
-		ModelAndView mv = new ModelAndView("chamados/global-chamado");
-		System.out.println(chamadoFiltro.getIdFiltro());
-		return listaGlobalFiltro(chamadoFiltro);
-	}*/
 
 	@PostMapping("/tecnico/{id}")
 	public ModelAndView definirTecnico(@PathVariable Long id, @Valid UsuarioFiltro tecnico, BindingResult result,
@@ -166,39 +182,57 @@ public class ChamadoController {
 
 	@GetMapping("/atender/{id}")
 	public ModelAndView abrirAtender(@PathVariable Long id) {
-		ModelAndView mv = new ModelAndView("/chamados/alterar-chamado");
+		ModelAndView mv;
+		
 		Chamado chamado = dao.findOne(id);
+		
+		if(chamado.getStatus().getIdStatus() == 0){
+			
+			mv = new ModelAndView("/chamados/alterar-chamado");
+		}else{
+			 mv = new ModelAndView("redirect:/chamados/detalhes/"+id);
+		}
+		
+		
+		
 		mv.addObject("chamado", chamado);
+		
 		return mv;
 
 	}
 
 	@PostMapping("/atender/{id}")
-	public ModelAndView atender(@PathVariable Long id, RedirectAttributes attributes) {
+	public ModelAndView atender(@PathVariable Long id, RedirectAttributes attributes,@AuthenticationPrincipal User user) {
 
+		Usuario userlogon = daoUser.findByLogin(user.getUsername());
 		Chamado chamado = dao.findOne(id);
+		
 
 		chamado.getDatas().setDataAtendimento(Calendar.getInstance());
 		chamado.setStatus(Status.valueOf("ATENDIMENTO"));
-
-		Usuario tec = daoUser.findOne(new Long(3));
-
-		chamado.setTecnico(tec);
+       	chamado.setTecnico(userlogon);
 
 		dao.save(chamado);
-		attributes.addAttribute("mensagem", "Chamado em Atendimento");
+		attributes.addFlashAttribute("mensagem", "Chamado em Atendimento");
 
-		return new ModelAndView("redirect:/chamados/informacoes/" + id);
+		return new ModelAndView("redirect:/chamados/detalhes/" + id);
 
 	}
 
-	@GetMapping("/informacoes/{id}")
-	public ModelAndView abrirInformacoes(@PathVariable Long id) {
-		ModelAndView mv = new ModelAndView("/chamados/informacoes-chamado");
+	@GetMapping("/detalhes/{id}")
+	public ModelAndView abrirInformacoes(@PathVariable Long id,@AuthenticationPrincipal User user) {
+		Usuario userlogon = daoUser.findByLogin(user.getUsername());
+		ModelAndView mv = new ModelAndView("/chamados/detalhes-chamado");
 		Chamado chamado = dao.findOne(id);
-		Solucao solucao = chamado.getSolucao();
+		
+
+		if (!chamado.getSolucoes().isEmpty()) {
+			Solucao solucao = chamado.getSolucoes().get(0);
+			mv.addObject("solucao", solucao);
+		} 
+
 		mv.addObject("chamado", chamado);
-		mv.addObject("solucao", solucao);
+		mv.addObject("logon", userlogon);
 
 		return mv;
 	}
@@ -222,17 +256,23 @@ public class ChamadoController {
 			return abrirFinalizar(id, solucao);
 
 		}
-
 		Chamado chamado = dao.getOne(id);
-		chamado.setSolucao(solucao);
+
 		chamado.getDatas().setDataFinalizacao(Calendar.getInstance());
+		solucao.setDatas(chamado.getDatas());
+
+		//daoSolu.save(solucao);
+		
+		
+		chamado.getSolucoes().add(solucao);
+
 		chamado.setStatus(Status.FINALIZADO);
 
 		dao.save(chamado);
 
 		attributes.addFlashAttribute("mensagem", "Chamado finalizado com sucesso");
 
-		return new ModelAndView("redirect:/chamados/informacoes/" + id);
+		return new ModelAndView("redirect:/chamados/detalhes/" + id);
 	}
 
 	@GetMapping("/reabrir/{id}")
@@ -246,25 +286,78 @@ public class ChamadoController {
 
 	@PostMapping("/reabrir/{id}")
 	public ModelAndView reabrir(@PathVariable Long id, @Valid ReAbrir reAbrir, BindingResult result,
-			RedirectAttributes attributes) {
-
+			RedirectAttributes attributes,@AuthenticationPrincipal User user) {
+		Usuario userlogon = daoUser.findByLogin(user.getUsername());
 		if (result.hasErrors()) {
 			return abrirReAbrir(id, reAbrir);
 		}
-		attributes.addAttribute("mensagem", "Chamado reaberto com sucesso!");
+		attributes.addFlashAttribute("mensagem", "Chamado reaberto com sucesso!");
 
 		Chamado chamado = dao.findOne(id);
 		chamado.setReAbrir(reAbrir);
+		List<Solucao> listaS = chamado.getSolucoes();
+		for(Solucao s : listaS){
+			
+			if(s.getReAbrir()==null){
+				s.setReAbrir(reAbrir);
+			}
+		}
+		
 		chamado.getReAbrir().setReAberto(true);
 		chamado.getDatas().setDataReAberto(Calendar.getInstance());
 		chamado.getDatas().setDataFinalizacao(null);
 		chamado.getDatas().setDataAtendimento(null);
-		chamado.setSolucao(null);
+		chamado.setTecnico(null);
+		chamado.setUsuario(userlogon);
+		/* chamado.setSolucao(null); */
 		chamado.setStatus(Status.PENDENTE);
 
 		dao.save(chamado);
 
-		return new ModelAndView("redirect:/chamados/informacoes/" + id);
+		return new ModelAndView("redirect:/chamados/detalhes/" + id);
+	}
+
+	@GetMapping("/cad")
+	public ModelAndView cadastrar() {
+
+		Equipamento equi = daoEqui.findOne(new Long(1));
+
+		List<Componente> lista = equi.getComponentes();
+		List<Componente> listaC = new ArrayList<>();
+
+		for (Componente c : lista) {
+			listaC.add(c);
+		}
+
+		for (int i = 6; i < 27; i++) {
+
+			Equipamento equipamento = new Equipamento();
+
+			equipamento.setComponentes(listaC);
+			equipamento.setDescricao(equi.getDescricao());
+			equipamento.setLoja(equi.getLoja());
+			equipamento.setPatrimonio(equi.getPatrimonio());
+			equipamento.setSetor(equi.getSetor());
+
+			Long patri = equipamento.getPatrimonio() + i;
+			equipamento.setPatrimonio(patri);
+
+			if (i < 10) {
+
+				equipamento.setNome("pdma0" + i);
+				equipamento.setLocal("Caixa 0" + i);
+
+			} else {
+
+				equipamento.setNome("pdma" + i);
+				equipamento.setLocal("Caixa " + i);
+			}
+
+			daoEqui.save(equipamento);
+
+		}
+
+		return new ModelAndView("redirect:/equipamentos");
 	}
 
 }

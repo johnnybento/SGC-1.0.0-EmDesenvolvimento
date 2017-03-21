@@ -2,23 +2,35 @@ package com.developerstaff.model;
 
 import java.math.BigDecimal;
 
-import javax.persistence.Embeddable;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.format.annotation.NumberFormat;
 
-@Embeddable
+@Entity
+@Table(name="solucoes")
 public class Solucao {
 
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 	@NotBlank
 	private String descricaoSolucao;
 	@Transient
 	private BigDecimal valorTotal;
 	@NotNull
 	private TipoSolucao tipoSolucao;
-
+	private Datas datas;
+	private ReAbrir reAbrir;
+	private Usuario tecnico;
+	private Usuario usuario;
+	
 	@NumberFormat(pattern = "#,##0.00")
 	private BigDecimal valorTransporte;
 
@@ -31,6 +43,22 @@ public class Solucao {
 
 	public void setDescricaoSolucao(String descricaoSolucao) {
 		this.descricaoSolucao = descricaoSolucao;
+	}
+
+	public Usuario getTecnico() {
+		return tecnico;
+	}
+
+	public void setTecnico(Usuario tecnico) {
+		this.tecnico = tecnico;
+	}
+
+	public Usuario getUsuario() {
+		return usuario;
+	}
+
+	public void setUsuario(Usuario usuario) {
+		this.usuario = usuario;
 	}
 
 	public BigDecimal getValorTotal() {
@@ -61,7 +89,7 @@ public class Solucao {
 	public BigDecimal getValorTransporte() {
 		if (valorTransporte == null) {
 
-			valorTransporte = new BigDecimal("0");
+			valorTransporte = new BigDecimal(0.0);
 		}
 		return valorTransporte;
 	}
@@ -69,6 +97,8 @@ public class Solucao {
 	public void setValorTransporte(BigDecimal valorTransporte) {
 		this.valorTransporte = valorTransporte;
 	}
+	
+	
 
 	public BigDecimal getOutrosValores() {
 		if (outrosValores == null) {
@@ -80,6 +110,30 @@ public class Solucao {
 
 	public void setOutrosValores(BigDecimal outrosValores) {
 		this.outrosValores = outrosValores;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public Datas getDatas() {
+		return datas;
+	}
+
+	public void setDatas(Datas datas) {
+		this.datas = datas;
+	}
+
+	public ReAbrir getReAbrir() {
+		return reAbrir;
+	}
+
+	public void setReAbrir(ReAbrir reAbrir) {
+		this.reAbrir = reAbrir;
 	}
 
 }

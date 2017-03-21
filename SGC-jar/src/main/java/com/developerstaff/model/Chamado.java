@@ -1,9 +1,12 @@
 package com.developerstaff.model;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -14,6 +17,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.Valid;
@@ -46,8 +50,10 @@ public class Chamado {
 	private Usuario usuario;
 	private Status status;
 	private BigDecimal valor;
-	private Solucao solucao;
+	private List<Solucao> solucoes = new ArrayList<>();
 	private ReAbrir reAbrir;
+	@NotBlank
+	private String componente;
 
 	/*
 	 * gets e sets
@@ -93,11 +99,10 @@ public class Chamado {
 
 	@ManyToOne
 	public Usuario getTecnico() {
-/*		 if(tecnico==null){
-			 tecnico = new Usuario();
-             tecnico.setNome(""); 
-		 }*/
-		
+		/*
+		 * if(tecnico==null){ tecnico = new Usuario(); tecnico.setNome(""); }
+		 */
+
 		return tecnico;
 	}
 
@@ -161,14 +166,15 @@ public class Chamado {
 		this.valor = valor;
 	}
 
-	@Embedded
-	public Solucao getSolucao() {
-		return solucao;
+    @OneToMany(cascade = CascadeType.MERGE)
+   	public List<Solucao> getSolucoes() {
+		return solucoes;
 	}
 
-	public void setSolucao(Solucao solucao) {
-		this.solucao = solucao;
+	public void setSolucoes(List<Solucao> solucoes) {
+		this.solucoes = solucoes;
 	}
+
 	public ReAbrir getReAbrir() {
 		return reAbrir;
 	}
@@ -176,15 +182,18 @@ public class Chamado {
 	public void setReAbrir(ReAbrir reAbrir) {
 		this.reAbrir = reAbrir;
 	}
-	
-	
-	
+
+	public String getComponente() {
+		return componente;
+	}
+
+	public void setComponente(String componente) {
+		this.componente = componente;
+	}
 
 	/*
 	 * Fim gets sets Começo Equals e HashCode
 	 */
-
-
 
 	@Override
 	public int hashCode() {

@@ -2,11 +2,17 @@ package com.developerstaff.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -14,30 +20,41 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotBlank;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity
 @Table(name = "usuarios")
-public class Usuario implements Serializable {
+public class Usuario implements Serializable, UserDetails {
 
 	private static final long serialVersionUID = 1330947202943086295L;
 
 	private Long id;
-	
+
+	@NotBlank
+	private String login;
 	@NotBlank
 	private String nome;
 	@NotBlank
 	private String password;
-	@NotBlank
+	private String email;
 	private String telefone;
-    @NotNull
+	private String celular;
+	@NotNull
 	private Loja loja;
-    private String celular;
+
 	private List<Chamado> chamados = new ArrayList<>();
 	@NotNull
 	private Tipo tipo;
+	private boolean estaLogado;
+
+	private Set<Role> roles = new HashSet<>();
+
+	/* private List<Role> roles = new ArrayList<>(); */
 
 	@Id
 	// @SequenceGenerator(name = "seq2", sequenceName = "HIB_SEQ"), generator =
@@ -49,6 +66,15 @@ public class Usuario implements Serializable {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	@Column(unique = true)
+	public String getLogin() {
+		return login;
+	}
+
+	public void setLogin(String login) {
+		this.login = login;
 	}
 
 	public String getNome() {
@@ -65,6 +91,14 @@ public class Usuario implements Serializable {
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+	
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
 	}
 
 	public String getTelefone() {
@@ -109,6 +143,24 @@ public class Usuario implements Serializable {
 
 	public void setCelular(String celular) {
 		this.celular = celular;
+	}
+
+	@OneToMany(mappedBy = "usuario", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	public Set<Role> getRoles() {
+		return roles;
+	}
+
+	public void setRoles(Set<Role> roles) {
+		this.roles = roles;
+	}
+
+	@Transient
+	public boolean isEstaLogado() {
+		return estaLogado;
+	}
+
+	public void setEstaLogado(boolean estaLogado) {
+		this.estaLogado = estaLogado;
 	}
 
 	@Override
@@ -166,6 +218,50 @@ public class Usuario implements Serializable {
 			return false;
 		if (tipo != other.tipo)
 			return false;
+		return true;
+	}
+
+	// methods spring security
+
+	@Override
+	@Transient
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		// TODO Auto-generated method stub
+		return roles;
+	}
+
+	@Transient
+	@Override
+	public String getUsername() {
+		// TODO Auto-generated method stub
+		return nome;
+	}
+
+	@Transient
+	@Override
+	public boolean isAccountNonExpired() {
+		// TODO Auto-generated method stub
+		return true;
+	}
+
+	@Transient
+	@Override
+	public boolean isAccountNonLocked() {
+		// TODO Auto-generated method stub
+		return true;
+	}
+
+	@Transient
+	@Override
+	public boolean isCredentialsNonExpired() {
+		// TODO Auto-generated method stub
+		return true;
+	}
+
+	@Transient
+	@Override
+	public boolean isEnabled() {
+		// TODO Auto-generated method stub
 		return true;
 	}
 

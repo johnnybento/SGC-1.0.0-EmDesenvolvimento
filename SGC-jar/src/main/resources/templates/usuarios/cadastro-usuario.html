@@ -36,13 +36,14 @@
 
 				</div>
               <div class="row">
-                  <div class="col-sm-6">
+                   <div class="col-sm-6">
 				      <div class="form-group">
-					      <label for="input-usuario-nome">Nome</label> 
-					      <input th:field="*{nome}" placeholder="Exemplo: Roberto Alves" id="input-usuario-nome" 
-					              type="text" class="form-control" />
+					      <label for="input-usuario-login">Login</label> 
+					      <input th:field="*{login}" placeholder="Exemplos: RobertoAM, ,Roberto01, FiscalCx01 e etc..." id="input-usuario-login" 
+					              type="text" class="form-control lowercase" />
 				      </div>
 				   </div>
+				   
 				   <div class="col-sm-6">
 						<div class="form-group">
 							<label for="input-senha-numero">Senha</label>
@@ -51,15 +52,23 @@
 						</div>
 					</div>
 
-				</div>
-              <div class="row">
+
                    <div class="col-sm-6">
 				        <div class="form-group">
 					        <label for="input-usuario-telefone">Telefone</label>
                             <input th:field="*{telefone}" id="input-usuario-telefone" type="text"
-								   class="form-control telefone" placeholder="(11) 3300-2233" />
+								   class="form-control telefone" placeholder="(00) 0000-0000" />
 				        </div>
+				        
 				    </div>
+                   <div class="col-sm-6">
+				        <div class="form-group">
+					        <label for="input-usuario-celular">Celular</label>
+                            <input th:field="*{celular}" id="input-usuario-telefone" type="text"
+								   class="form-control celular" placeholder="(00) 90000-0000" />
+				        </div>
+				        
+				    </div>				    
 			        <div class="col-sm-6">         
                    	     <div class="form-group">
 					           <label for="input-usuario-loja" th:text="#{usuario.loja}">Loja</label>
@@ -72,8 +81,7 @@
 					  </select>
 				         </div>
 				    </div>
-			  </div>
-			  <div class="row">
+
 					<div class="col-sm-6">
 				    <div class="form-group">
 					     <label for="input-usuario-tipo">Tipo de Usuário</label>
@@ -90,6 +98,21 @@
 				   </div>		
 				
 			   </div>
+                  <div class="col-sm-6">
+				      <div class="form-group">
+					      <label for="input-usuario-nome">Nome</label> 
+					      <input th:field="*{nome}" placeholder="Exemplo: Roberto Alves Medeiros" id="input-usuario-nome" 
+					              type="text" class="form-control" />
+				      </div>
+				   </div>
+                  <div class="col-sm-6">
+				      <div class="form-group">
+					      <label for="input-usuario-email">Email</label> 
+					      <input th:field="*{email}" placeholder="Exemplo: Robertoam@sgctech.com.br" id="input-usuario-email" 
+					              type="email" class="form-control lowercase" />
+				      </div>
+				   </div>		
+				    				   			   			   
 					<div>
 						<input th:field="*{id}" type="hidden" />
 					</div>

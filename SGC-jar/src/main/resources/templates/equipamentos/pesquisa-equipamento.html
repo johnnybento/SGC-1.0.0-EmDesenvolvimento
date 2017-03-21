@@ -27,15 +27,22 @@
 					<span th:text="${mensagem}"></span><br />
 
 				</div>
-
+		<div class="alert  alert-danger  alert-dismissible" role="alert" th:if="${!#strings.isEmpty(erro)}">
+					<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+						<i class="fa  fa-exclamation-circle"></i>
+						<span th:text="${erro}"></span>
+						<br />
+		</div>
 			<form method="GET" class="form-vertical  js-form-loading" th:object="${equipamentoFiltro}" >
 				<div class="form-group">
 					<div class="input-group">
 					   <div class="col-sm-6"> 
-					       <input id="cid" type="number" th:field="*{id} "class="form-control" placeholder="Pesquise pelo ID" />
+					       <input id="cid" type="number" th:field="*{id} "class="form-control" placeholder="Busque por ID" />
 						</div>
 					   <div class="col-sm-6"> 
-					       <input id="nome" type="text" th:field="*{nome} "class="form-control" placeholder="Pesquise pelo Nome" />
+					       <input id="nome" type="text" th:field="*{nome} "class="form-control" placeholder="Busque por campos" />
 						</div>						
 						
 						<span class="input-group-btn">
@@ -46,7 +53,16 @@
 					</div>
 				</div>
 			</form>
-
+			
+		 <div class="row">
+		    <div class="col-sm-6">
+			     <div class="form-group">					
+                      <a th:href="@{/equipamentos/novo}" class="btn btn-success" sec:authorize="hasRole('ROLE_ADMINISTRADOR')">Novo Equipamento <i  class="fa  fa-plus"> </i></a>
+                      <a th:href="@{/equipamentos}" class="btn btn-success" >Limpar filtros <i  class="fa  fa-eraser"> </i></a>
+                 </div>              
+           </div>
+		</div>
+		
 			<div class="table-responsive">
 				<table id="tabela-produtos"
 					class="table  table-striped  table-bordered  table-hover  table-condensed  js-sticky-table">
@@ -55,31 +71,40 @@
 							<th class="av-table-vinhos-col-codigo" style="width: 60px; text-align: center;">ID</th>
 							<th style="width: 200px;">Nome</th>
 							<th class="av-table-vinhos-col-tipo" >Descrição</th>
+							<th class="av-table-vinhos-col-tipo" >Componentes</th>
 							<th class="av-table-vinhos-col-valor" style="width: 100px;">Setor</th>
 							<th class="av-table-vinhos-col-valor" style="width: 100px;">Loja</th>
 							<th class="av-table-vinhos-col-valor" style="width: 100px;">Patrimônio</th>
-							<th class="av-table-vinhos-col-icons"  style="width: 60px; text-align: center;" ></th>
+							<th class="av-table-vinhos-col-icons"  style="width: 60px; text-align: center;" sec:authorize="hasRole('ROLE_ADMINISTRADOR')"></th>
+							<th class="av-table-vinhos-col-icons"  style="width: 60px; text-align: center;"></th>
 						</tr>
 					</thead>
 					<tbody>
 						<tr th:each="equipamento : ${equipamentos}">
 							<td th:text=${equipamento.id} class="text-center">1</td>
 							<td>
-							<a th:href="@{/equipamentos/{id}(id=${equipamento.id})}" th:text="|${equipamento.nome} localizado no ${equipamento.local}|" >Mouse Multilaser</a>
-							<!-- <span th:text="${vinho.nome}" sec:authorize="not hasRole('ROLE_CADASTRAR_VINHO')"></span> -->
+							<a th:href="@{/equipamentos/{id}(id=${equipamento.id})}" th:text="|${equipamento.nome} localizado no ${equipamento.local}|" sec:authorize="hasRole('ROLE_ADMINISTRADOR')">Mouse Multilaser</a>
+							<span th:text="|${equipamento.nome} localizado no ${equipamento.local}|" sec:authorize="not hasRole('ROLE_ADMINISTRADOR')"></span>
 							</td>
 							<td th:text="${equipamento.descricao}">Mouse Multilaser cor-preta DPI-360</td>
-							<td th:text="${equipamento.setor}"class="text-center">Brinquedos</td>
+							<td >
+	    						<span  th:text="${equipamento.componentesTexto}"></span>
+     						</td>							
+							<td th:text="${equipamento.setor.nomeSetor}"class="text-center">Brinquedos</td>
 							<td th:text="${equipamento.loja.nome}"class="text-center">Matriz</td>
 							<td th:text="${equipamento.patrimonio}"class="text-center">4545544</td>
 							
-							<td class="text-center" >
+							<td class="text-center" sec:authorize="hasRole('ROLE_ADMINISTRADOR')">
 							<i class="fa  fa-trash" style="cursor: pointer" 
 							data-toggle="modal" data-target="#confirmaExclusaoModal"
 							data:nome="${equipamento.nome}"
 							data:url-delete="@{/equipamentos/{id}(id=${equipamento.id})}"
 							data:classe="${classe}"></i>
 								</td>
+							<td  class="text-center">
+							    <a class="fa  fa-list" th:href="@{/equipamentos/detalhes/{id}(id=${equipamento.id})}"  title="Detalhes do equipamento"></a>
+							
+							</td>	
 						</tr>
 						<tr th:if="${equipamentos.empty}">
 							<td colspan="7">Nenhum equipamento cadastrado</td>

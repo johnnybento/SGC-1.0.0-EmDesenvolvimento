@@ -2,6 +2,7 @@
 <html lang="pt" xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:th="http://www.thymeleaf.org"
 	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	xmlns:data="http://www.thymeleaf.org/extras/data-attribute"
 	layout:decorate="~{layout/layout-padrao}">
 <body>
 
@@ -35,13 +36,15 @@
 					<span th:text="${mensagem}"></span><br />
 
 				</div>
-
+				<div class="row">
+					<div class="col-sm-6">
 				<div class="form-group">
 					<label for="input-loja-nome">Nome</label> 
 					<input th:field="*{nome}" placeholder="Exemplo: Loja Matriz" id="input-loja-nome" 
 					       type="text" class="form-control" />
 				</div>
-				<div class="row">
+				</div>
+		
 					<div class="col-sm-6">
 						<div class="form-group">
 							<label for="input-loja-numero">Numero da Filial</label>
@@ -113,7 +116,38 @@
 						</div>		
 						
 					</div>
-					
+		            
+		            
+		            
+		            <div class="col-sm-8" th:if="${loja.id != null} ? ${loja.id != null}" style="padding-top: 20px">
+                         <fieldset class="form-group" style="padding-top: 10px">
+                             <legend>Selecione os setores da loja</legend>
+ 				    <div class="col-sm-12">
+						<div class="form-group">                                     
+                                    <a href="#" data-toggle="modal" data-target="#modalsetor" class="btn btn-success" >Adicionar setor <i  class="fa  fa-plus"> </i></a>
+                                    <a href="#" data-toggle="modal" data-target="#modalSetorRemover" class="btn btn-danger" >Remover setor <i  class="fa  fa-minus"> </i></a>
+                        </div>
+                   </div>       
+                              
+                                  <th:block th:each="setor : ${setores}">
+                                        
+                               <div class="col-sm-3">
+						             <div class="form-group">       
+                                             <input class="checkbox-inline" type="checkbox" th:field="*{setores}" th:value="${setor.id}"/>
+                                             <label th:for="${#ids.prev('setores')}" class="checkbox-inline" style="font-size: 20px"><span th:text="${setor.nomeSetor}"></span> 
+                                              
+                                             </label>
+                                     </div>                                                      
+                               </div>              
+
+                                       
+                                 </th:block> 
+                                   
+                                 <div th:if="${setores.empty}">
+                                   <h4>Nenhum Setor Cadastrado</h4>
+                                 </div>    
+                           </fieldset>
+                   </div>   					
 
 
 					
@@ -129,6 +163,106 @@
 
 			</form>
 		</div>
+		
+		<div class="modal fade" tabindex="-1" id="modalSetorRemover" role="dialog" aria-labelledby="gridSystemModalLabel">
+            <div class="modal-dialog" role="document">
+                 <div class="modal-content">
+                      <div class="modal-header">
+                           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                   <span aria-hidden="true">&times;</span>
+                           </button>
+                           <h4 class="modal-title" id="gridSystemModalLabel">Remoção de Setor</h4>
+                     </div>
+                <form th:action="@{/lojas/setor}" method="POST" th:object="${setor}"> 
+                  <input type="hidden" name="_method" value="DELETE" />
+                  
+                    <div class="modal-body">
+
+                        
+                             <div class="form-group">    
+                                  <label for="idTecnico">Setores</label> 
+                                  <select  th:field="*{id}" class="form-control" id="idTecnico">
+                                          <option value="">Escolha um Setor</option>
+                                          <option th:each="setor : ${setores}"
+                                                  th:value="${setor.id}"
+                                                  th:text="${setor.nomeSetor}" ></option>
+                                          
+                                  </select> 
+                            </div>       
+                     <div>
+						<input  th:value="${loja.id}" type="hidden" name="idLoja"/>
+					</div>  
+
+
+                   </div>
+                  <div class="modal-footer">
+                       <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                       <button type="submit" class="btn btn-primary">Remover um setor</button>
+                  </div>
+             
+             </form>
+             
+             </div><!-- /.modal-content -->
+          </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+    		<div class="modal fade" tabindex="-1" id="modalsetor" role="dialog" aria-labelledby="gridSystemModalLabel">
+            <div class="modal-dialog" role="document">
+                 <div class="modal-content">
+                      <div class="modal-header">
+                           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                   <span aria-hidden="true">&times;</span>
+                           </button>
+                           <h4 class="modal-title" id="gridSystemModalLabel">Cadastro de Setor</h4>
+                     </div>
+                <form th:action="@{/lojas/setor}" method="POST" th:object="${setor}"> 
+                    <div class="modal-body">
+
+                        
+                             <div class="form-group">    
+                                  <label for="idSetor">Setor</label> 
+                                  <input class="form-control" id="idSetor" th:field="*{nomeSetor}"/>
+                            </div>
+					<div>
+						<input  th:value="${loja.id}" type="hidden" name="idLoja"/>
+					</div>                        
+                      
+
+
+                   </div>
+                  <div class="modal-footer">
+                       <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                       <button type="submit" class="btn btn-primary">Adicionar um setor</button>
+                  </div>
+             
+             </form>
+             
+             </div><!-- /.modal-content -->
+          </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+	
+	<th:block layout:fragment="javascript-extra">
+	
+		<script >
+         $('#modalsetor').on('show.bs.modal', function (event) {
+        	var button = $(event.relatedTarget);
+ 			var url = button.data('loja'); 
+         });
+         $('#modalSetorRemover').on('show.bs.modal', function (event) {
+         	var button = $(event.relatedTarget);
+  			var url = button.data('loja'); 
+          });
+       </script>  
+	</th:block>
+		
+		
+		
+		
 	</section>
+	
+	 
+
+		  
+    
+	
 </body>
 </html>
