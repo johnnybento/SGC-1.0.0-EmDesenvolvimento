@@ -26,6 +26,7 @@ public class Solucao {
 	private BigDecimal valorTotal;
 	@NotNull
 	private TipoSolucao tipoSolucao;
+	
 	private Datas datas;
 	private ReAbrir reAbrir;
 	private Usuario tecnico;
