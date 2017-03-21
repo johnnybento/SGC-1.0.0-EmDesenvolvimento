@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="pt" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    xmlns:data="http://www.thymeleaf.org/extras/data-attribute"
+	layout:decorate="~{layout/layout-padrao}"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<body>
+
+<section layout:fragment="conteudo">
+
+<div class="page-header">
+				<div class="container-fluid">
+					<h1>Detalhes do Usuário</h1>
+				</div>
+			</div>
+
+			<div class="container-fluid">
+				
+   			<div class="row">
+   			
+                 <div class="col-sm-4">
+					  <div class="form-group">
+					     
+						   <label for="input-usuario-id"> ID  </label>
+                           <input class="form-control" id="input-loja-id" th:value="${usuario.id}" readonly="readonly" type="text"/>
+                           
+					  </div>
+                </div>
+                  <div class="col-sm-4">
+					  <div class="form-group">
+						   <label for="input-usuario-login">Login</label>
+						   <input	 id="input-usuario-login" maxlength="50" th:value="${usuario.login}" readonly="readonly" type="text" class="form-control" />
+					 </div>
+                 </div>
+                <div class="col-sm-4">
+					  <div class="form-group">
+						   <label for="input-usuario-senha">Senha</label>
+						   <input	 id="input-usuario-senha" maxlength="50" th:value="${usuario.password}" readonly="readonly" type="text" class="form-control" />
+					 </div>
+                 </div>                                      
+                <div class="col-sm-4">
+					  <div class="form-group">
+						   <label for="input-usuario-nome">Nome</label>
+						   <input	 id="input-usuario-nome" maxlength="50" th:value="${usuario.nome}" readonly="readonly" type="text" class="form-control" />
+					 </div>
+                 </div>     			
+                  <div class="col-sm-4">
+					  <div class="form-group">
+						   <label for="input-usuario-tipo">Tipo da Conta</label>
+						   <input	 id="input-usuario-tipo" maxlength="50" th:value="${usuario.tipo}" readonly="readonly" type="text" class="form-control" />
+					 </div>
+                 </div>     			
+                  <div class="col-sm-4">
+					  <div class="form-group">
+						   <label for="input-usuario-loja"><a th:href="@{/lojas/detalhes/{id}(id=${usuario.loja.id})}">Loja</a></label>
+						    <input	id="input-usuario-loja" maxlength="50" th:value="${usuario.loja.nome}" readonly="readonly" type="text" class="form-control" />
+					  </div>
+                </div>  			
+			    			
+          
+                  <div class="col-sm-4">
+					  <div class="form-group">
+						   <label for="input-usuario-email">E-mail</label>
+						   <input	 id="input-usuario-email" maxlength="50" th:value="${usuario.email}" readonly="readonly" type="text" class="form-control" />
+					 </div>
+                 </div>
+                <div class="col-sm-4">
+					  <div class="form-group">
+						   <label for="input-usuario-telefone">Telefone Fixo</label>
+						   <input	 id="input-usuario-telefone" maxlength="50" th:value="${usuario.telefone}" readonly="readonly" type="text" class="form-control" />
+					 </div>
+                 </div> 
+                   <div class="col-sm-4">
+					  <div class="form-group">
+						   <label for="input-usuario-celular">Celular</label>
+						   <input	 id="input-usuario-celular" maxlength="50" th:value="${usuario.celular}" readonly="readonly" type="text" class="form-control" />
+					 </div>
+                 </div> 
+                                            
+           </div>	     							
+
+					<div class="row">
+					     <div class="col-sm-4">
+					          <div class="form-group">
+					          
+					               <a th:href="@{/usuarios/{id}(id=${usuario.id})}"class="btn  btn-warning" 
+					               sec:authorize="hasRole('ROLE_ADMINISTRADOR')" >Alterar <span class="fa fa-edit"></span></a>
+					               
+					               <a class="btn  btn-danger" data-toggle="modal" data-target="#confirmaExclusaoModal" data:nome="${usuario.nome}" 
+					                data:url-delete="@{/usuarios/{id}(id=${usuario.id})}" data:classe="${classe}" 
+					                sec:authorize="hasRole('ROLE_ADMINISTRADOR')">Remover <span class="fa fa-trash"></span></a>	
+					                
+				                   <a href="javascript:history.back()" class="btn  btn-primary">Voltar <span class="fa fa-arrow-left"></span></a>
+                             </div>
+                        </div>
+				
+			        </div>
+     	</div>	
+	 <th:block layout:fragment="modal-excluir"></th:block>
+	 
+
+</section>
+
+	 	<th:block layout:fragment="javascript-extra">
+	
+	<script >
+         $('#confirmaExclusaoModal').on('show.bs.modal', function (event) {
+        	 var button = $(event.relatedTarget);
+ 			var nome = button.data('nome');
+ 			var url = button.data('url-delete');
+ 			
+ 			var modal = $(this);
+ 			var form = modal.find('form');
+ 			form.attr('action', url);
+ 			
+ 			
+
+ 			modal.find('.modal-body span').html(
+ 					'Tem certeza que deseja excluir <strong>' + nome
+ 							+ '</strong>?');
+         });
+         
+         </script>   
+	</th:block>		
+</body>
+</html>

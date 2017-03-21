@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="pt" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    xmlns:data="http://www.thymeleaf.org/extras/data-attribute"
+	layout:decorate="~{layout/layout-padrao}"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<body>
+
+<section layout:fragment="conteudo">
+
+<div class="page-header">
+				<div class="container-fluid">
+					<h1>Detalhes da Loja</h1>
+				</div>
+			</div>
+
+			<div class="container-fluid">
+				
+   			<div class="row">
+   			
+                 <div class="col-sm-4">
+					  <div class="form-group">
+					     
+						   <label for="input-loja-id"> ID          </label>
+                           <input class="form-control" id="input-loja-id" th:value="${loja.id}" readonly="readonly" type="text"/>
+                           
+					  </div>
+                </div>
+                <div class="col-sm-4">
+					  <div class="form-group">
+						   <label for="input-loja-nome">Nome</label>
+						   <input	 id="input-loja-nome" maxlength="50" th:value="${loja.nome}" readonly="readonly" type="text" class="form-control" />
+					 </div>
+                 </div>     			
+   			
+                  <div class="col-sm-4">
+					  <div class="form-group">
+						   <label for="input-loja-numero">Numero da Loja</label>
+						    <input	id="input-loja-numero" maxlength="50" th:value="${loja.numeroLoja}" readonly="readonly" type="text" class="form-control" />
+					  </div>
+                </div>  			
+   			    			
+              
+              
+           </div>	     
+					<div class="form-group">
+						<label for="textarea-loja-descricao">Descrição</label>
+						<textarea id="textarea-loja-descricao" maxlength="600" th:text="${loja.descricao}" readonly="readonly" rows="3"
+							class="form-control"></textarea>
+					</div>
+					<div class="form-group">
+						<label for="textarea-loja-setores">Setores</label>
+						<textarea id="textarea-loja-setores " maxlength="600" th:text="${loja.setoresTexto}" readonly="readonly" rows="3"
+							class="form-control"></textarea>
+					</div>
+				   <fieldset  style="padding-top: 10px">
+                            <legend>Endereço</legend>
+                            <div class="row">
+                                  <div class="col-sm-4">
+                                       <div class="form-group">
+                                             <label for="input-loja-endereco-logradouro">Logradouro</label>
+						                     <input	id="input-loja-endereco-logradouro" maxlength="50" th:value="${loja.endereco.logradouro}" readonly="readonly" type="text" class="form-control" />
+                                       </div>
+                                  </div>
+                                  <div class="col-sm-4">
+                                       <div class="form-group">
+                                             <label for="input-loja-endereco-numero">Numero</label>
+						                     <input	id="input-loja-endereco-numero" maxlength="50" th:value="${loja.endereco.numero}" readonly="readonly" type="text" class="form-control" />
+                                       </div>
+                                  </div> 
+                                  <div class="col-sm-4">
+                                       <div class="form-group">
+                                             <label for="input-loja-endereco-cep">CEP</label>
+						                     <input	id="input-loja-endereco-cep" maxlength="50" th:value="${loja.endereco.cep}" readonly="readonly" type="text" class="form-control" />
+                                       </div>
+                                  </div>                                                                        
+                                  <div class="col-sm-4">
+                                       <div class="form-group">
+                                             <label for="input-loja-endereco-bairro">Bairro</label>
+						                     <input	id="input-loja-endereco-bairro" maxlength="50" th:value="${loja.endereco.bairro}" readonly="readonly" type="text" class="form-control" />
+                                       </div>
+                                  </div>
+                                  <div class="col-sm-4">
+                                       <div class="form-group">
+                                             <label for="input-loja-endereco-municipio">Municipio</label>
+						                     <input	id="input-loja-endereco-municipio" maxlength="50" th:value="${loja.endereco.municipio}" readonly="readonly" type="text" class="form-control" />
+                                       </div>
+                                  </div> 
+                                  <div class="col-sm-4">
+                                       <div class="form-group">
+                                             <label for="input-loja-endereco-estado">Estado</label>
+						                     <input	id="input-loja-endereco-estado" maxlength="50" th:value="${loja.endereco.estado}" readonly="readonly" type="text" class="form-control" />
+                                       </div>
+                                  </div>                                   
+                            </div>
+                   </fieldset>								
+
+					<div class="row">
+					     <div class="col-sm-4">
+					          <div class="form-group">
+					          
+					               <a th:href="@{/lojas/{id}(id=${loja.id})}"class="btn  btn-warning" 
+					               sec:authorize="hasRole('ROLE_ADMINISTRADOR')" >Alterar <span class="fa fa-edit"></span></a>
+					               
+					               <a class="btn  btn-danger" data-toggle="modal" data-target="#confirmaExclusaoModal" data:nome="${loja.nome}" 
+					                data:url-delete="@{/lojas/{id}(id=${loja.id})}" data:classe="${classe}" 
+					                sec:authorize="hasRole('ROLE_ADMINISTRADOR')">Remover <span class="fa fa-trash"></span></a>	
+					                
+				                   <a href="javascript:history.back()" class="btn  btn-primary">Voltar <span class="fa fa-arrow-left"></span></a>
+                             </div>
+                        </div>
+				
+			        </div>
+     	</div>	
+	 <th:block layout:fragment="modal-excluir"></th:block>
+	 
+
+</section>
+
+	 	<th:block layout:fragment="javascript-extra">
+	
+	<script >
+         $('#confirmaExclusaoModal').on('show.bs.modal', function (event) {
+        	 var button = $(event.relatedTarget);
+ 			var nome = button.data('nome');
+ 			var url = button.data('url-delete');
+ 			
+ 			var modal = $(this);
+ 			var form = modal.find('form');
+ 			form.attr('action', url);
+ 			
+ 			
+
+ 			modal.find('.modal-body span').html(
+ 					'Tem certeza que deseja excluir <strong>' + nome
+ 							+ '</strong>?');
+         });
+         
+         </script>   
+	</th:block>		
+</body>
+</html>

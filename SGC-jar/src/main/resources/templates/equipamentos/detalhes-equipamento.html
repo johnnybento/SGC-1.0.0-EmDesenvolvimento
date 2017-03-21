@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="pt" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    xmlns:data="http://www.thymeleaf.org/extras/data-attribute"
+	layout:decorate="~{layout/layout-padrao}"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<body>
+
+<section layout:fragment="conteudo">
+
+<div class="page-header">
+				<div class="container-fluid">
+					<h1>Detalhes de Equipamento</h1>
+				</div>
+			</div>
+
+			<div class="container-fluid">
+				
+   			<div class="row">
+   			
+                 <div class="col-sm-4">
+					  <div class="form-group">
+					     
+						   <label for="input-equipamento-id"> ID          </label>
+                           <input class="form-control" id="input-equipamento-id" th:value="${equipamento.id}" readonly="readonly" type="text"/>
+                           
+					  </div>
+                </div>
+                <div class="col-sm-4">
+					  <div class="form-group">
+						   <label for="input-equipamento-nome">Nome</label>
+						   <input	 id="input-equipamento-nome" maxlength="50" th:value="${equipamento.nome}" readonly="readonly" type="text" class="form-control" />
+					 </div>
+                 </div>     			
+   			
+                  <div class="col-sm-4">
+					  <div class="form-group">
+						   <label for="input-equipamento-local">Local</label>
+						    <input	id="input-equipamento-local" maxlength="50" th:value="${equipamento.local}" readonly="readonly" type="text" class="form-control" />
+					  </div>
+                </div>  			
+   			
+                 <div class="col-sm-4">
+					  <div class="form-group">
+					     
+						   <label  for="input-equipamento-loja"><a th:href="@{/lojas/detalhes/{id}(id=${equipamento.loja.id})}" title="Ver Loja"> Loja</a></label>
+                           <input  class="form-control" id="input-equipamento-loja" th:value="${equipamento.loja.nome}" readonly="readonly" type="text"/>
+                           
+					  </div>
+                </div>     			
+
+                 <div class="col-sm-4">
+					  <div class="form-group">
+						   <label for="input-equipamento-setor">Setor</label>
+                           <input	 id="input-equipamento-setor" maxlength="50" th:value="${equipamento.setor.nomeSetor}" readonly="readonly"  type="text" class="form-control" />
+					 </div>
+                 </div>                 
+
+						<div class="col-sm-4">
+							<div class="form-group">
+								<label for="input-produto-estoque">Patrimônio</label>
+								 <input th:value="${equipamento.patrimonio}" id="input-produto-estoque" type="text" readonly="readonly" class="form-control numeros">
+							</div>
+						</div>
+              
+              
+           </div>	     
+					<div class="form-group">
+						<label for="textarea-equipamento-descricao">Descrição</label>
+						<textarea id="textarea-equipamento-descricao" maxlength="600" th:text="${equipamento.descricao}" readonly="readonly" rows="3"
+							class="form-control"></textarea>
+					</div>
+					<div th:with="compsVariable='teste'" ></div>
+					<div class="form-group">
+						<label for="textarea-equipamento-componentes">Componentes</label>
+						
+						<textarea id="textarea-equipamento-componentes" maxlength="600" th:text="${equipamento.componentesTexto}" readonly="readonly" rows="3"
+							class="form-control"></textarea>
+					</div>					
+
+					<div class="row">
+					     <div class="col-sm-4">
+					          <div class="form-group">
+					          
+					               <a th:href="@{/equipamentos/{id}(id=${equipamento.id})}"class="btn  btn-warning" 
+					               sec:authorize="hasRole('ROLE_ADMINISTRADOR')">Alterar <span class="fa fa-edit"></span></a>
+					               
+					               <a class="btn  btn-danger" data-toggle="modal" data-target="#confirmaExclusaoModal" data:nome="${equipamento.nome}" 
+					                data:url-delete="@{/equipamentos/{id}(id=${equipamento.id})}" data:classe="${classe}" 
+					                sec:authorize="hasRole('ROLE_ADMINISTRADOR')">Remover <span class="fa fa-trash"></span></a>	
+					                
+				                   <a href="javascript:history.back()" class="btn  btn-primary">Voltar <span class="fa fa-arrow-left"></span></a>
+                             </div>
+                        </div>
+				
+			        </div>
+     	</div>	
+	 <th:block layout:fragment="modal-excluir"></th:block>
+	 
+
+</section>
+
+	 	<th:block layout:fragment="javascript-extra">
+	
+	<script >
+         $('#confirmaExclusaoModal').on('show.bs.modal', function (event) {
+        	 var button = $(event.relatedTarget);
+ 			var nome = button.data('nome');
+ 			var url = button.data('url-delete');
+ 			
+ 			var modal = $(this);
+ 			var form = modal.find('form');
+ 			form.attr('action', url);
+ 			
+ 			
+
+ 			modal.find('.modal-body span').html(
+ 					'Tem certeza que deseja excluir <strong>' + nome
+ 							+ '</strong>?');
+         });
+         
+         </script>   
+	</th:block>		
+</body>
+</html>
