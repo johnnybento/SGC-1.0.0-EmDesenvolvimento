@@ -383,9 +383,15 @@
 							    </div>
 							    
 							</td>
-                             <td class="text-center" th:if="${chamado.status.idStatus == 2} or ${chamado.status.idStatus == 2}">
-							
-							     <a th:href="@{/chamados/reabrir/{id}(id=${chamado.id})}" class="btn btn-info" style="width:110px;">Reabrir</a>
+                             
+                            
+                             <td class="text-center" th:if="${chamado.status.idStatus == 2}">
+							   <div th:if="${chamado.reabrirChamado}">
+							        <a th:href="@{/chamados/reabrir/{id}(id=${chamado.id})}" class="btn btn-info" style="width:110px;">Reabrir</a>
+						        </div>
+						        <div th:if="not ${chamado.reabrirChamado}">
+						        <a class="btn btn-default" th:disabled="disabled" style="width:110px;" title="Estorou o prazo">Reabrir</a>
+							    </div>
 							</td>
 							
 							

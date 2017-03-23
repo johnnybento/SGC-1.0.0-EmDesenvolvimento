@@ -6,13 +6,18 @@ import java.util.Calendar;
 import javax.persistence.Embeddable;
 import javax.persistence.Transient;
 
+import org.joda.time.DateTime;
+import org.joda.time.Days;
+import org.joda.time.Hours;
+
+
+
 @Embeddable
 public class Datas {
 
 	
 	private Calendar dataCriacao;
 	private Calendar dataAtendimento;
-	private Calendar dataReAberto;
 	private Calendar dataFinalizacao;
 	@Transient
 	private Calendar dataDePrevisao;
@@ -42,15 +47,6 @@ public class Datas {
 		this.dataFinalizacao = dataFinalizacao;
 	}
 	
-
-	public Calendar getDataReAberto() {
-		return dataReAberto;
-	}
-
-	public void setDataReAberto(Calendar dataReAberto) {
-		this.dataReAberto = dataReAberto;
-	}
-
 	@Transient
 	public String getDataCriacaoF() {
 		String dataFormatada = "";
@@ -83,6 +79,33 @@ public class Datas {
 
 		return dataFormatada;
 	}
+	
+	@Transient
+	public String getTempoSolucao(){
+
+	      int dias = getTempoDias();
+	      int hours = (getTempoHoras())- (24*dias);
+		return ""+dias+" dias e "+hours+" horas";
+	}
+	@Transient
+	public int getTempoDias(){
+	
+	     DateTime dataInicial = new DateTime(dataCriacao);
+	     DateTime dataFinal = new DateTime(dataFinalizacao);
+	      int dias = Days.daysBetween(dataInicial, dataFinal).getDays();
+	      
+		return dias;
+	}
+	@Transient
+	public int getTempoHoras(){
+	
+	     DateTime dataInicial = new DateTime(dataCriacao);
+	     DateTime dataFinal = new DateTime(dataFinalizacao);
+	     
+	      int hours = Hours.hoursBetween(dataInicial, dataFinal).getHours();
+		return hours;
+	} 
+	
 
 	public Calendar getDataDePrevisao() {
 		return dataDePrevisao;

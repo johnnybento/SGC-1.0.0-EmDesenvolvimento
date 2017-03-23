@@ -53,7 +53,7 @@
                  </div>     			
                   <div class="col-sm-4">
 					  <div class="form-group">
-						   <label for="input-usuario-loja"><a th:href="@{/lojas/detalhes/{id}(id=${usuario.loja.id})}">Loja</a></label>
+						   <label for="input-usuario-loja">Loja  <a th:href="@{/lojas/detalhes/{id}(id=${usuario.loja.id})}" title="Ver loja" class="fa fa-eye"></a></label>
 						    <input	id="input-usuario-loja" maxlength="50" th:value="${usuario.loja.nome}" readonly="readonly" type="text" class="form-control" />
 					  </div>
                 </div>  			

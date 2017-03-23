@@ -3,6 +3,7 @@
 	xmlns:th="http://www.thymeleaf.org"
 	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
 	layout:decorate="~{layout/layout-padrao}"
+	xmlns:data="http://www.thymeleaf.org/extras/data-attribute"
 	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <body>
 
@@ -15,7 +16,9 @@
 				 	             Detalhes do Chamado 
 				 	             
 				           </h1>
-			    				    
+				           <div align="right" >
+				                <span style="font-size: 15px; color: red;" th:text="|Mensagens: 0${size}|"></span>
+			    			</div>	    
 				</div>
 			</div>
 
@@ -28,6 +31,14 @@
 					<span th:text="${mensagem}"></span><br />
 
    				</div>
+		        <div class="alert  alert-danger  alert-dismissible"
+					th:if="${!#strings.isEmpty(erro)}">
+					<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+					<span th:text="${erro}"></span><br />
+
+				</div>   				
    				<div class="row">
                              <div class="col-sm-4">                      
                                    <div class="form-group">
@@ -82,19 +93,12 @@
                  <div class="col-sm-4">
 					  <div class="form-group">
 						   <label for="input-chamado-usuario">Criado por 
-						          <a th:href="@{/usuarios/detalhes/{id}(id=${chamado.usuario.id})}" class="fa fa-eye" title="Ver usuário"></a>
+						          <a sec:authorize="hasAnyRole('ROLE_ADMINISTRADOR','ROLE_TECNICO')" th:href="@{/usuarios/detalhes/{id}(id=${chamado.usuario.id})}" class="fa fa-eye" title="Ver usuário"></a>
 						   </label>
                           <input id="input-chamado-usuario" class="form-control" readonly="readonly" th:value="${chamado.usuario.nome}" />
 					  </div>
                  </div>
-                 <div class="col-sm-4" th:if="${chamado.status.idStatus != 0}">
-					  <div class="form-group">
-						   <label for="input-chamado-tecnico">Atendido por
-						          <a th:href="@{/usuarios/detalhes/{id}(id=${chamado.tecnico.id})}" class="fa fa-eye" title="Ver usuário"></a>
-						   </label>
-                          <input id="input-chamado-tecnico" class="form-control" readonly="readonly" th:value="${chamado.tecnico.nome}" />
-					  </div>
-                 </div>                                                   			
+                                               			
                  <div class="col-sm-4">
 					  <div class="form-group">
 						   <label for="input-chamado-prioridade">Prioridade</label>
@@ -109,59 +113,39 @@
                           <input id="input-chamado-status" class="form-control" readonly="readonly" th:value="${chamado.status}" />
 					  </div>
                  </div>
-                 <div class="col-sm-4">
+                 <div class="col-sm-4" th:if="${chamado.status.idStatus == 2}">
 					  <div class="form-group">
-						   <label for="input-chamado-status">Status2222</label>
-                          <input id="input-chamado-status" class="form-control" readonly="readonly" th:value="${chamado.status}" />
+						   <label for="input-chamado-status">Valor Total</label>
+                          <input id="input-chamado-status" class="form-control" readonly="readonly" th:value="${chamado.valorTotal}" />
 					  </div>
-                 </div>            
+                 </div>
+                 <div class="col-sm-4" th:if="${chamado.status.idStatus == 2}">
+					  <div class="form-group">
+						   <label for="input-chamado-tecnico">Tempo Total
+						         
+						   </label>
+                          <input id="input-chamado-tecnico" class="form-control" readonly="readonly" th:value="${chamado.tempoTotal}" />
+					  </div>
+                 </div>                              
 
-         </div>        
+         </div> 
+         <div>
+              <div class="form-group"  th:if="${chamado.reAbrir != null} ? ${chamado.reAbrir != null}">
+					      <label for="textarea-chamado-descricao-solucao">Motivo de Reabertura</label>
+					      <textarea   id="textarea-chamado-descricao-solucao" maxlength="600" th:text="${chamado.reAbrir.motivo}" readonly="readonly"  rows="3"
+					                  class="form-control"></textarea>
+			  </div>             
+
+         </div>       
          
-         <div th:if="${chamado.status.idStatus != 0}">
-             <th:block  th:each="solucao : ${chamado.solucoes}"> 
-                                        <fieldset class="form-group" style="padding-top: 5px">
-                             <legend>Datas</legend></fieldset>
-               
-               <div class="row">           
-                          
-                        <div class="col-sm-4">
-					         <div class="form-group">
-						          <label for="input-chamado-criacao">Data de Abertura</label>
-                                  <input id="input-chamado-criacao" class="form-control" readonly="readonly" th:value="${solucao.datas.dataCriacaoF}" />
-					         </div>
-                       </div>                         
-                            
-                          <div class="col-sm-4">
-					           <div class="form-group">
-						            <label for="input-chamado-atendimento">Inicio de Atendimento</label>
-                                   <input id="input-chamado-atendimento" class="form-control" readonly="readonly" th:value="${solucao.datas.dataCriacaoF}" />
-					          </div>
-                          </div>
-                 
-                     <div  th:if="${chamado.status.idStatus != 1}">                                         
-                       <div class="col-sm-4">
-					        <div class="form-group">
-						         <label for="input-chamado-finalizazao">Data de Finalização</label>
-                                <input id="input-chamado-finalizazao" class="form-control" readonly="readonly" th:value="${solucao.datas.dataCriacaoF}" />
-					        </div>
-                       </div>
-                       <div class="col-sm-4">
-					        <div class="form-group">
-						         <label for="input-chamado-tempo-total">Tempo de Atendimento</label>
-                                <input id="input-chamado-tempo-total" class="form-control" readonly="readonly" th:value="${solucao.datas.dataCriacaoF}" />
-					        </div>
-                       </div>  
-                 
-             </div>     
-           </div> 
-       
-                                             
-               <div id="informacoes" th:if="${chamado.status.idStatus == 2} ? ${chamado.status.idStatus == 2}">
+         <div th:if="not ${chamado.solucoes.empty}" style="padding-top: 20px;" >
+             <th:block  th:each="solucao : ${chamado.solucoes}" >
+             <div  th:with="count=${chamado.count}">
+               <div id="informacoes"  style="padding-top: 20px;">
                                                                                 <fieldset class="form-group" style="padding-top: 5px">
-                             <legend>Solução</legend></fieldset>   
+                             <legend style="font-size: 25px">Solução <span th:text="${count}"></span></legend></fieldset>   
                                 
-                  <div class="row">      
+                  <div class="row" >      
 
                             
                              <div class="col-sm-4">                      
@@ -175,7 +159,7 @@
                             
                              <div class="col-sm-4">                      
                                    <div class="form-group">
-						                  <label for="input-chamado-locomocao">Gastos com locomoção</label>
+						                  <label for="input-chamado-locomocao">Gastos com transporte</label>
                                           <input id="input-chamado-locomocao" th:value="${solucao.valorTransporte}" readonly="readonly" class="form-control js-moeda" />
 					               </div>
                              </div>
@@ -187,42 +171,87 @@
                              </div>
                        <div class="col-sm-4">                      
                             <div class="form-group">
-						         <label for="valorTotal">Valor Total</label>
+						         <label for="valorTotal">Valor da Solução </label>
                                  <input id="valorTotal" class="form-control" th:value="${solucao.valorTotal}" readonly="readonly" />
 					       </div>
-                      </div>                                              
+                      </div> 
+                 <div class="col-sm-4">
+					  <div class="form-group">
+						   <label for="input-solucao-usuario"><span th:if="${count == 1 }">Criado por</span><span th:if="${count > 1 }">Reaberto por</span> 
+						   
+						          <a sec:authorize="hasAnyRole('ROLE_ADMINISTRADOR','ROLE_TECNICO')" th:href="@{/usuarios/detalhes/{id}(id=${solucao.usuario.id})}" class="fa fa-eye" title="Ver usuário"></a>
+						   </label>
+                          <input id="input-solucao-usuario" class="form-control" readonly="readonly" th:value="${solucao.usuario.nome}" />
+					  </div>
+                 </div>                      
+                      
+                 <div class="col-sm-4" >
+					  <div class="form-group">
+						   <label for="input-solucao-tecnico">Atendido por
+						          <a  sec:authorize="hasAnyRole('ROLE_ADMINISTRADOR','ROLE_TECNICO')" th:href="@{/usuarios/detalhes/{id}(id=${solucao.tecnico.id})}" class="fa fa-eye" title="Ver usuário"></a>
+						   </label>
+                          <input id="input-solucao-tecnico" class="form-control" readonly="readonly" th:value="${solucao.tecnico.nome}" />
+					  </div>
+                 </div>                                                                      
               </div>
                      
-            </div>    
-    		   			   
-   			<div id="informacoes" th:if="${chamado.status.idStatus == 2} ? ${chamado.status.idStatus == 2}">   
+            </div>              
+   			<div id="informacoes"  >   
    			   <div class="form-group" >
 					<label for="textarea-chamado-descricao-solucao">Solução</label>
 					<textarea   id="textarea-chamado-descricao-solucao" maxlength="600" th:text="${solucao.descricaoSolucao}" readonly="readonly"  rows="3"
 					class="form-control"></textarea>
 			  </div>
-              <div class="form-group" th:if="${chamado.reAbrir != null} ? ${chamado.reAbrir != null}">
+              <div class="form-group" th:if="${solucao.reAbrir != null} ? ${solucao.reAbrir != null}">
 					      <label for="textarea-chamado-descricao-solucao">Motivo de Reabertura</label>
-					      <textarea   id="textarea-chamado-descricao-solucao" maxlength="600" readonly="readonly"  rows="3"
+					      <textarea   id="textarea-chamado-descricao-solucao" maxlength="600" th:text="${solucao.reAbrir.motivo}" readonly="readonly"  rows="3"
 					                  class="form-control"></textarea>
 			  </div>          
           
-          </div>
+          </div>              
+                                        <fieldset class="form-group" >
+           
+                            <legend style="font-size: 20px">Datas</legend></fieldset>
           
+               
+               <div class="row" >           
+                          
+                        <div class="col-sm-4">
+					         <div class="form-group">
+						          <label for="input-chamado-criacao">Data de Abertura</label>
+                                  <input id="input-chamado-criacao" class="form-control" readonly="readonly" th:value="${solucao.datas.dataCriacaoF}" />
+					         </div>
+                       </div>                         
+                            
+                          <div class="col-sm-4">
+					           <div class="form-group">
+						            <label for="input-chamado-atendimento">Inicio de Atendimento</label>
+                                   <input id="input-chamado-atendimento" class="form-control" readonly="readonly" th:value="${solucao.datas.dataAtendimentoF}" />
+					          </div>
+                          </div>
+                 
+                     <div >                                         
+                       <div class="col-sm-4">
+					        <div class="form-group">
+						         <label for="input-chamado-finalizazao">Data de Finalização</label>
+                                <input id="input-chamado-finalizazao" class="form-control" readonly="readonly" th:value="${solucao.datas.dataFinalizacaoF}" />
+					        </div>
+                       </div>
+                       <div class="col-sm-4">
+					        <div class="form-group">
+						         <label for="input-chamado-tempo-total">Tempo de Atendimento</label>
+                                <input id="input-chamado-tempo-total" class="form-control" readonly="readonly" th:value="${solucao.datas.tempoSolucao}" />
+					        </div>
+                       </div>  
+                 
+             </div>     
+           </div> 
+   
           
+       </div>   
         </th:block>   
    </div>         
-                   
-                   
-                   
-                   
-  
-			  
-			  
-			  
-			  
-			            
-              		
+                                 		
 
 				</form>
 				
@@ -235,11 +264,119 @@
                
                <a th:href="@{/chamados/atender/{id}(id=${chamado.id})}" class="btn btn-success" 
                   th:if="${chamado.status.idStatus == 0}" sec:authorize="hasAnyRole('ROLE_ADMINISTRADOR','ROLE_TECNICO')">Atender</a>
-                  <a href="javascript:history.back()" class="btn  btn-warning">Reabrir <span class="fa fa-arrow-left"></span></a>
+                  <a th:if="${chamado.status.idStatus == 2 } ? ${chamado.reabrirChamado}" th:href="@{/chamados/reabrir/{id}(id=${chamado.id})}" class="btn  btn-warning">Reabrir <span class="fa fa-folder-open"></span></a>
                <a href="javascript:history.back()" class="btn  btn-primary">Voltar <span class="fa fa-arrow-left"></span></a>
-			</div>
 			
+			
+			
+			<form method="POST" class="form-vertical  js-form-loading" th:object="${messenger}" th:action="@{/chamados/mensagem/{id}(id=${chamado.id})}" >
+               <div id="informacoes"  style="padding-top: 20px;">
+                   <fieldset class="form-group" style="padding-top: 5px">
+                             <legend style="font-size: 25px">Mensagens </legend></fieldset>   
+   			    
+   			     <th:block th:each="mensseger : ${mensagens}">
+   			               <div class="form-group" >
+					           <label for="textarea-chamado-descricao-solucao" >Usuário: <span th:text="${mensseger.usuario.nome}"></span> Data: <span th:text="${mensseger.dataMensagem}"></span></label>
+					                                                            
+					           <textarea   id="textarea-chamado-descricao-solucao" maxlength="250" th:text="${mensseger.mensagem}" readonly="readonly"  rows="2"
+					                       class="form-control"></textarea>
+			  </div>   			          
+   			     
+   			     </th:block>
+   			    
+   			    
+   			    
+   			      <div class="form-group">
+					   <label for="textarea-chamado-mensagem">Escreva sua mensagem</label>
+					   <textarea   id="textarea-chamado-mensagem" maxlength="250" th:field="*{mensagem}" rows="3"
+					            class="form-control"></textarea>
+			       </div>
+					<div class="form-group">
+						<a class="btn btn-default" data-toggle="modal" data-target="#confirmaMensagem"   data:url-mensagem="@{/chamados/mensagem/{id}(id=${chamado.id})}"
+						data:nome="${chamado.id}" >Enviar <span class="fa fa-envelope"></span></a>
+					</div>				       
+			       
+			       			
+		</div>
+			</form>
+			
+			
+	</div>
+	       <div class="modal  fade" id="confirmaMensagem" tabindex="-1" role="dialog">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<form method="POST" th:action="@{/chamados/mensagem/{id}(id=${chamado.id})}" th:object="${messenger}">
+					     <div class="alert  alert-danger  alert-dismissible" role="alert" th:if="${#fields.hasAnyErrors()}">
+					          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+						              <span aria-hidden="true">&times;</span>
+					          </button>
+					          <th:block th:each="erro : ${#fields.detailedErrors()} ">
+						                <i class="fa  fa-exclamation-circle"></i>
+						                <span th:text="${erro.message}"></span>
+						                <br />
+					          </th:block>
+					     </div>
+					
+
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal"
+								aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+							<h4 class="modal-title" id="myModalLabel" ><span> A</span></h4>
+						</div>
+						<div class="modal-body">
+						
+						
+						<input id="msg" th:field="*{mensagem}" type="hidden" />
+						
+						
+						
+						
+							<span>Tem certeza?</span>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn  btn-default"
+								data-dismiss="modal">Cancelar</button>
+							<button type="submit" class="btn  btn-primary" ><span>A</span></button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>	
 			
 </section>
+
+        	 	<th:block layout:fragment="javascript-extra">
+	
+	<script >
+    $('#confirmaMensagem').on('show.bs.modal', function (event) {
+      	 var button = $(event.relatedTarget);
+   		var nome = button.data('nome');
+   		var url = button.data('url-mensagem');
+   		var mensagem = $("#textarea-chamado-mensagem");
+
+   		
+   		var modal = $(this);
+   		var form = modal.find('form');
+   		form.attr('action', url);
+   		
+   		
+   		var input = modal.find('#msg');
+   		input.attr('value', mensagem.val());
+   		
+   		
+   		
+   		modal.find('.modal-footer span').html('Enviar');
+   		modal.find('.modal-title span').html('Enviar Mensagem');
+
+   		modal.find('.modal-body span').html(
+   				'Tem certeza que deseja enviar a mensagem no chamado com <strong> ID-' + nome
+   						+ '</strong>?');
+       });	
+   </script>
+   </th:block> 
+
+
 </body>
 </html>

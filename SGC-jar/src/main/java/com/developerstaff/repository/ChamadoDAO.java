@@ -86,6 +86,7 @@ public interface ChamadoDAO extends JpaRepository<Chamado, Long>{
 	public List<Chamado> pegaDatasFinalizacao(@Param("dataInicio") Calendar dataInico,@Param("dataFim") Calendar dataFim);
 	
 	public List<Chamado> findByLojaNome(String nome);
+	public List<Chamado> findByUsuarioId(Long id);
 	
 	
 	

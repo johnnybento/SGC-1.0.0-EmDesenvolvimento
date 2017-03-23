@@ -19,6 +19,10 @@ public class ReAbrir {
 		this.reAberto = reAberto;
 	}
 	public String getMotivo() {
+		if(motivo ==null){
+			motivo="";
+		}
+		
 		return motivo;
 	}
 	public void setMotivo(String motivo) {

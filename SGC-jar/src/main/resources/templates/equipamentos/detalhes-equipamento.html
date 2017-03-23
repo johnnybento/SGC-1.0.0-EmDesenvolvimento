@@ -44,7 +44,9 @@
                  <div class="col-sm-4">
 					  <div class="form-group">
 					     
-						   <label  for="input-equipamento-loja"><a th:href="@{/lojas/detalhes/{id}(id=${equipamento.loja.id})}" title="Ver Loja"> Loja</a></label>
+						   <label  for="input-equipamento-loja">Loja 
+						   
+						    <a th:href="@{/lojas/detalhes/{id}(id=${equipamento.loja.id})}" title="Ver loja" class="fa fa-eye"></a></label>
                            <input  class="form-control" id="input-equipamento-loja" th:value="${equipamento.loja.nome}" readonly="readonly" type="text"/>
                            
 					  </div>

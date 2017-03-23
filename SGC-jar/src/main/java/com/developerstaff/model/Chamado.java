@@ -2,6 +2,7 @@ package com.developerstaff.model;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import javax.persistence.AttributeOverride;
@@ -24,6 +25,9 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotBlank;
+import org.joda.time.DateTime;
+import org.joda.time.Days;
+import org.joda.time.Hours;
 
 /**
  * @author JohnnyBento
@@ -51,10 +55,12 @@ public class Chamado {
 	private Status status;
 	private BigDecimal valor;
 	private List<Solucao> solucoes = new ArrayList<>();
+	private List<Messenger> mensagens = new ArrayList<>();
 	private ReAbrir reAbrir;
 	@NotBlank
 	private String componente;
-
+	@Transient
+	private int count;//criar separado
 	/*
 	 * gets e sets
 	 */
@@ -99,9 +105,6 @@ public class Chamado {
 
 	@ManyToOne
 	public Usuario getTecnico() {
-		/*
-		 * if(tecnico==null){ tecnico = new Usuario(); tecnico.setNome(""); }
-		 */
 
 		return tecnico;
 	}
@@ -166,13 +169,23 @@ public class Chamado {
 		this.valor = valor;
 	}
 
-    @OneToMany(cascade = CascadeType.MERGE)
+    @OneToMany(cascade = CascadeType.ALL)
    	public List<Solucao> getSolucoes() {
 		return solucoes;
 	}
 
 	public void setSolucoes(List<Solucao> solucoes) {
 		this.solucoes = solucoes;
+	}
+	
+	
+	@OneToMany(cascade = CascadeType.ALL)
+	public List<Messenger> getMensagens() {
+		return mensagens;
+	}
+
+	public void setMensagens(List<Messenger> mensagens) {
+		this.mensagens = mensagens;
 	}
 
 	public ReAbrir getReAbrir() {
@@ -191,6 +204,73 @@ public class Chamado {
 		this.componente = componente;
 	}
 
+
+
+	public int getCount() {
+		if(count == 0){
+			count = 1;
+		}
+		return count++;
+	}
+
+	public void setCount(int count) {
+		this.count = count;
+	}
+	
+	@Transient
+	public String getTempoTotal(){
+		Calendar ini = Calendar.getInstance();
+		Calendar fim = Calendar.getInstance();
+		
+         for(int i = 0; i <= solucoes.size()-1; i++){
+        	 
+        	 if(i==0){
+        		 Solucao s = solucoes.get(i);
+        		 ini = s.getDatas().getDataCriacao();
+        	 }else if(i ==solucoes.size()-1){
+        		 Solucao s = solucoes.get(i);
+        		fim = s.getDatas().getDataFinalizacao();
+        		 
+        	 }
+    	     
+         } 
+    	 
+    	 DateTime dataInicial = new DateTime(ini);
+	     DateTime dataFinal = new DateTime(fim);
+	     
+	     int days = Days.daysBetween(dataInicial, dataFinal).getDays();
+	     int hours = (Hours.hoursBetween(dataInicial, dataFinal).getHours()) - (days*24);
+		
+		return days+" dias e "+hours+" horas";
+	}
+	
+	@Transient
+	public BigDecimal getValorTotal(){
+		BigDecimal valorTotal = new BigDecimal(0);
+		
+		for(Solucao s : solucoes){
+			
+			valorTotal = valorTotal.add(s.getOutrosValores().add(s.getValorTransporte()));	
+		}
+		
+		
+		return valorTotal;
+	} 
+	
+	@Transient
+	public boolean getReabrirChamado(){
+	      
+	     boolean autoriza = false;	
+	     DateTime dataInicial = new DateTime(datas.getDataCriacao());
+	     DateTime dataFinal = new DateTime(datas.getDataFinalizacao());
+	      int dias = Days.daysBetween(dataInicial, dataFinal).getDays();
+		
+	      if(dias <= 2){
+	    	  autoriza = true; 
+	      }
+		return autoriza;
+	} 	
+	
 	/*
 	 * Fim gets sets Começo Equals e HashCode
 	 */

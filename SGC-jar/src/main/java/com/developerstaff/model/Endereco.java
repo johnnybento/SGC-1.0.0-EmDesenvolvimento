@@ -1,13 +1,19 @@
 package com.developerstaff.model;
 
+import java.io.Serializable;
+
 import javax.persistence.Embeddable;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotBlank;
 
 @Embeddable
-public class Endereco {
+public class Endereco implements Serializable{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	@NotBlank
 	private String logradouro;
 	@NotNull

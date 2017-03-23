@@ -7,6 +7,8 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -19,8 +21,10 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.developerstaff.model.Loja;
 import com.developerstaff.model.Setor;
+import com.developerstaff.model.Usuario;
 import com.developerstaff.repository.LojaDAO;
 import com.developerstaff.repository.SetorDAO;
+import com.developerstaff.repository.UsuarioDAO;
 import com.developerstaff.repository.filter.LojaFiltro;
 
 @Controller
@@ -31,6 +35,8 @@ public class LojaController {
 	private LojaDAO dao;
 	@Autowired
 	private SetorDAO setorDao;
+	@Autowired
+	private UsuarioDAO daoUser;
 
 	@GetMapping("/novo")
 	public ModelAndView novo(Loja loja) {
@@ -147,14 +153,23 @@ public class LojaController {
 	}
 	
 	@GetMapping("/detalhes/{id}")
-	public ModelAndView detalhes(@PathVariable Long id){
-		ModelAndView mv = new ModelAndView("lojas/detalhes-loja");
-        Loja loja = dao.findOne(id);
-        
-        mv.addObject("loja",loja);
-		
-		
-		return mv;
+	public ModelAndView detalhes(@PathVariable Long id,@AuthenticationPrincipal User user){
+		Usuario userlogon = daoUser.findByLogin(user.getUsername());
+		Loja loja = dao.findOne(id);
+		if(userlogon.getLoja().getId() == loja.getId() || userlogon.getTipo().idTipo != 0){
+			ModelAndView mv = new ModelAndView("lojas/detalhes-loja");
+	        
+	        
+	        mv.addObject("loja",loja);
+			
+			
+			return mv;	
+			
+		}else{
+			
+			return new ModelAndView("redirect:/lojas/detalhes/"+userlogon.getLoja().getId());
+		}
+
 		
 	}
 

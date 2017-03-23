@@ -23,6 +23,7 @@ import com.developerstaff.model.Chamado;
 import com.developerstaff.model.Componente;
 import com.developerstaff.model.Datas;
 import com.developerstaff.model.Equipamento;
+import com.developerstaff.model.Messenger;
 import com.developerstaff.model.Prioridade;
 import com.developerstaff.model.ReAbrir;
 import com.developerstaff.model.Solucao;
@@ -32,7 +33,7 @@ import com.developerstaff.model.Usuario;
 import com.developerstaff.repository.ChamadoDAO;
 import com.developerstaff.repository.EquipamentoDAO;
 import com.developerstaff.repository.LojaDAO;
-import com.developerstaff.repository.SolucaoDAO;
+import com.developerstaff.repository.MessengerDAO;
 import com.developerstaff.repository.UsuarioDAO;
 import com.developerstaff.repository.filter.ChamadoFiltro;
 import com.developerstaff.repository.filter.UsuarioFiltro;
@@ -50,7 +51,7 @@ public class ChamadoController {
 	@Autowired
 	private ChamadoDAO dao;
 	@Autowired
-	private SolucaoDAO daoSolu;
+	private MessengerDAO daoMsg;
 	/*
 	 * @Autowired private ComponenteDAO daoComp;
 	 */
@@ -113,6 +114,7 @@ public class ChamadoController {
 		attributes.addFlashAttribute("mensagem", "Chamado criado com sucesso!");
 
 		chamado.setDatas(new Datas());
+
 		chamado.getDatas().setDataCriacao(Calendar.getInstance());
 		chamado.setStatus(Status.valueOf("PENDENTE"));
 
@@ -160,6 +162,30 @@ public class ChamadoController {
 
 		mv.addObject("chamados", bo.fazFiltroChamados(chamadoFiltro, userlogon, dao));
 
+		return mv;
+	}
+	
+	@GetMapping("/meuschamados")
+	public ModelAndView abrirMeusChamados(@Valid ChamadoFiltro chamadoFiltro,@AuthenticationPrincipal User user){
+		ModelAndView mv = new ModelAndView("chamados/global-chamado");
+		
+		
+		Usuario userlogon = daoUser.findByLogin(user.getUsername());
+		
+		
+		mv.addObject("tecnicos", daoUser.getTecnicos());
+		mv.addObject("tecnico", new Usuario());
+		mv.addObject("lojas", daoLj.findAll());
+		mv.addObject("usuarios", daoUser.findAll());
+		mv.addObject("filtro", chamadoFiltro);
+		mv.addObject("prioridades", Prioridade.values());
+		mv.addObject("statuss", Status.values());
+		mv.addObject("logado", userlogon);
+		
+		mv.addObject("chamados",dao.findByUsuarioId(userlogon.getId()));
+		
+	     
+		
 		return mv;
 	}
 
@@ -220,7 +246,7 @@ public class ChamadoController {
 	}
 
 	@GetMapping("/detalhes/{id}")
-	public ModelAndView abrirInformacoes(@PathVariable Long id,@AuthenticationPrincipal User user) {
+	public ModelAndView abrirInformacoes(@PathVariable Long id,@AuthenticationPrincipal User user,Messenger messenger) {
 		Usuario userlogon = daoUser.findByLogin(user.getUsername());
 		ModelAndView mv = new ModelAndView("/chamados/detalhes-chamado");
 		Chamado chamado = dao.findOne(id);
@@ -231,43 +257,77 @@ public class ChamadoController {
 			mv.addObject("solucao", solucao);
 		} 
 
+		if(!chamado.getSolucoes().isEmpty()){
+			chamado.setUsuario(chamado.getSolucoes().get(0).getUsuario());	
+		}
+		
 		mv.addObject("chamado", chamado);
 		mv.addObject("logon", userlogon);
+		mv.addObject("messenger",messenger);
+		mv.addObject("mensagens", daoMsg.findByChamadoId(chamado.getId()));
+		mv.addObject("size", daoMsg.findByChamadoId(chamado.getId()).size());
 
+/*		for(Messenger m :  chamado.getMensagens()){
+			
+			System.out.println(m.getMensagem()+" User"+m.getUsuario().getNome());
+		}*/
+		
 		return mv;
 	}
 
 	@GetMapping("/finalizar/{id}")
-	public ModelAndView abrirFinalizar(@PathVariable Long id, Solucao solucao) {
-		ModelAndView mv = new ModelAndView("/chamados/alterar-chamado");
+	public ModelAndView abrirFinalizar(@PathVariable Long id, Solucao solucao,@AuthenticationPrincipal User user) {
+		
+		Usuario userlogon = daoUser.findByLogin(user.getUsername());
+		
+		
+		
 		Chamado chamado = dao.findOne(id);
-		mv.addObject("chamado", chamado);
-		mv.addObject("TipoSolucoes", TipoSolucao.values());
-		mv.addObject("solucao", solucao);
-		return mv;
+		
+		
+		if(chamado.getStatus().getIdStatus() == 1 && chamado.getTecnico().getId() == userlogon.getId()){
+			ModelAndView mv = new ModelAndView("/chamados/alterar-chamado");
+			mv.addObject("chamado", chamado);
+			mv.addObject("TipoSolucoes", TipoSolucao.values());
+			mv.addObject("solucao", solucao);
+			return mv;
+			
+		}else{
+			
+			return new ModelAndView("redirect:/chamados/detalhes/"+id);
+		}
+
 	}
 
 	@PostMapping("/finalizar/{id}")
 	public ModelAndView finalizar(@PathVariable Long id, @Valid Solucao solucao, BindingResult result,
-			RedirectAttributes attributes) {
-
+			RedirectAttributes attributes,@AuthenticationPrincipal User user) {
+		
+		//está vindo com id não entendo?
+		solucao.setId(null);
+		
 		if (result.hasErrors()) {
 
-			return abrirFinalizar(id, solucao);
+			return abrirFinalizar(id, solucao,user);
 
 		}
 		Chamado chamado = dao.getOne(id);
-
+		chamado.setReAbrir(null);
+		//finaliza o chamado
 		chamado.getDatas().setDataFinalizacao(Calendar.getInstance());
-		solucao.setDatas(chamado.getDatas());
-
-		//daoSolu.save(solucao);
-		
-		
-		chamado.getSolucoes().add(solucao);
-
 		chamado.setStatus(Status.FINALIZADO);
-
+		
+		//pega informações do chamado para a solução
+		solucao.setDatas(chamado.getDatas());
+		solucao.setTecnico(chamado.getTecnico());
+		solucao.setUsuario(chamado.getUsuario());
+		
+		
+		 
+       /* solucao = daoSolu.saveAndFlush(s);*/
+		
+        System.out.println("IDDD"+solucao.getId());
+		chamado.getSolucoes().add(solucao);	
 		dao.save(chamado);
 
 		attributes.addFlashAttribute("mensagem", "Chamado finalizado com sucesso");
@@ -277,45 +337,86 @@ public class ChamadoController {
 
 	@GetMapping("/reabrir/{id}")
 	public ModelAndView abrirReAbrir(@PathVariable Long id, ReAbrir reAbrir) {
-		ModelAndView mv = new ModelAndView("/chamados/alterar-chamado");
+		
 		Chamado chamado = dao.findOne(id);
+		
+		if(chamado.getStatus().idStatus == 2 && (!chamado.getReabrirChamado())){
+			chamado.setUsuario(chamado.getSolucoes().get(0).getUsuario());
+			
+		ModelAndView mv = new ModelAndView("/chamados/alterar-chamado");
+		
 		mv.addObject("chamado", chamado);
 
 		return mv;
+		}else{
+			
+			return new ModelAndView("redirect:/chamados/detalhes/" + id);
+		}
 	}
 
 	@PostMapping("/reabrir/{id}")
 	public ModelAndView reabrir(@PathVariable Long id, @Valid ReAbrir reAbrir, BindingResult result,
 			RedirectAttributes attributes,@AuthenticationPrincipal User user) {
 		Usuario userlogon = daoUser.findByLogin(user.getUsername());
+		Chamado chamado = dao.findOne(id);
 		if (result.hasErrors()) {
+			
 			return abrirReAbrir(id, reAbrir);
 		}
+
 		attributes.addFlashAttribute("mensagem", "Chamado reaberto com sucesso!");
 
-		Chamado chamado = dao.findOne(id);
+		
 		chamado.setReAbrir(reAbrir);
+		
 		List<Solucao> listaS = chamado.getSolucoes();
 		for(Solucao s : listaS){
 			
 			if(s.getReAbrir()==null){
 				s.setReAbrir(reAbrir);
+				/*daoSolu.save(s);*/
 			}
 		}
 		
 		chamado.getReAbrir().setReAberto(true);
-		chamado.getDatas().setDataReAberto(Calendar.getInstance());
-		chamado.getDatas().setDataFinalizacao(null);
-		chamado.getDatas().setDataAtendimento(null);
+        chamado.setDatas(new Datas());
+		chamado.getDatas().setDataCriacao(Calendar.getInstance());
+
 		chamado.setTecnico(null);
 		chamado.setUsuario(userlogon);
-		/* chamado.setSolucao(null); */
 		chamado.setStatus(Status.PENDENTE);
 
 		dao.save(chamado);
 
 		return new ModelAndView("redirect:/chamados/detalhes/" + id);
 	}
+	
+	@PostMapping("/mensagem/{id}")
+	public ModelAndView enviarMsg(@PathVariable Long id,@Valid Messenger msg,BindingResult result
+			,@AuthenticationPrincipal User user,RedirectAttributes attributes){
+		
+		msg.setId(null);
+		Usuario userlogon = daoUser.findByLogin(user.getUsername());
+		Chamado chamado = dao.findOne(id);
+		
+		
+		if(result.hasErrors()){
+			attributes.addFlashAttribute("erro","Campo mensagem é obrigatório!");
+			ModelAndView mv = new ModelAndView("redirect:/chamados/detalhes/" + id);
+					
+			return mv;
+		}
+		msg.setUsuario(userlogon);
+		msg.setChamado(chamado);
+		msg.setDataMsg(Calendar.getInstance());
+		chamado.getMensagens().add(msg);
+		dao.save(chamado);
+		attributes.addFlashAttribute("mensagem","Mensagem enviada com sucesso!");
+		
+		return new ModelAndView("redirect:/chamados/detalhes/" + id);
+	}
+	
+
 
 	@GetMapping("/cad")
 	public ModelAndView cadastrar() {

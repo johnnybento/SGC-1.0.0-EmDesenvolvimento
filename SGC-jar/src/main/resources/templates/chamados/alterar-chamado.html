@@ -3,7 +3,8 @@
 	xmlns:th="http://www.thymeleaf.org"
 	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
 	layout:decorate="~{layout/layout-padrao}"
-	xmlns:data="http://www.thymeleaf.org/extras/data-attribute">
+	xmlns:data="http://www.thymeleaf.org/extras/data-attribute"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <body>
 
 <section layout:fragment="conteudo">
@@ -101,7 +102,7 @@
                  <div class="col-sm-4">
 					  <div class="form-group">
 						   <label for="input-chamado-usuario">Criado por 
-						          <a th:href="@{/usuarios/detalhes/{id}(id=${chamado.usuario.id})}" class="fa fa-eye" title="Ver usuário"></a>
+						          <a sec:authorize="hasAnyRole('ROLE_ADMINISTRADOR','ROLE_TECNICO')" th:href="@{/usuarios/detalhes/{id}(id=${chamado.usuario.id})}" class="fa fa-eye" title="Ver usuário"></a>
 						   </label>
                           <input id="input-chamado-usuario" class="form-control" readonly="readonly" th:value="${chamado.usuario.nome}" />
 					  </div>
@@ -109,7 +110,7 @@
                  <div class="col-sm-4" >
 					  <div class="form-group">
 						   <label for="input-chamado-tecnico">Atendido por
-						          <a th:href="@{/usuarios/detalhes/{id}(id=${chamado.tecnico.id})}" class="fa fa-eye" title="Ver usuário"></a>
+						          <a sec:authorize="hasAnyRole('ROLE_ADMINISTRADOR','ROLE_TECNICO')" th:href="@{/usuarios/detalhes/{id}(id=${chamado.tecnico.id})}" class="fa fa-eye" title="Ver usuário"></a>
 						   </label>
                           <input id="input-chamado-tecnico" class="form-control" readonly="readonly" th:value="${chamado.tecnico.nome}" />
 					  </div>
@@ -140,13 +141,19 @@
                                  <input id="input-chamado-criacao" class="form-control" readonly="readonly" th:value="${chamado.datas.dataAtendimentoF}" />
 					        </div>
                        </div>  
-                        <div class="col-sm-4">                      
+<!--                         <div class="col-sm-4">                      
                             <div class="form-group">
 						         <label for="input-chamado-criacao">Data de Conclusão</label>
                                  <input id="input-chamado-criacao" class="form-control" readonly="readonly" th:value="${chamado.datas.dataFinalizacaoF}" />
 					        </div>
-                        </div>                                                   
-
+                        </div> -->
+              </div>          
+              <div class="form-group"  th:if="${chamado.reAbrir != null} ? ${chamado.reAbrir != null}">
+					      <label for="textarea-chamado-descricao-solucao">Motivo de Reabertura</label>
+					      <textarea   id="textarea-chamado-descricao-solucao" maxlength="600" th:text="${chamado.reAbrir.motivo}" readonly="readonly"  rows="3"
+					                  class="form-control"></textarea>
+			  </div>                                                                             
+              <div class="row">
                         <div class="col-sm-4">                      
                              <div class="form-group">
 						          <label for="select-chamado-tipoSolucao">Tipo de solução	 </label>
@@ -286,7 +293,7 @@
                  <div class="col-sm-4">
 					  <div class="form-group">
 						   <label for="input-chamado-usuario">Criado por 
-						          <a th:href="@{/usuarios/detalhes/{id}(id=${chamado.usuario.id})}" class="fa fa-eye" title="Ver usuário"></a>
+						          <a sec:authorize="hasAnyRole('ROLE_ADMINISTRADOR','ROLE_TECNICO')" th:href="@{/usuarios/detalhes/{id}(id=${chamado.usuario.id})}" class="fa fa-eye" title="Ver usuário"></a>
 						   </label>
                           <input id="input-chamado-usuario" class="form-control" readonly="readonly" th:value="${chamado.usuario.nome}" />
 					  </div>
@@ -309,11 +316,13 @@
                                   <input id="input-chamado-criacao" class="form-control" readonly="readonly" th:value="${chamado.datas.dataCriacaoF}" />
 					         </div>
                         </div>
-                       
-                       
-                       
-                        
-                 	</div>				
+                                           
+                 	</div>	
+              <div class="form-group"  th:if="${chamado.reAbrir != null} ? ${chamado.reAbrir != null}">
+					      <label for="textarea-chamado-descricao-solucao">Motivo de Reabertura</label>
+					      <textarea   id="textarea-chamado-descricao-solucao" maxlength="600" th:text="${chamado.reAbrir.motivo}" readonly="readonly"  rows="3"
+					                  class="form-control"></textarea>
+			  </div>                     				
 					<div class="form-group">
 						<a class="btn btn-success"  data-toggle="modal" data-target="#confirmaAtendimento"
 						   data:nome="${chamado.id}" data:footer=#{chamado.atender} 
@@ -365,13 +374,7 @@
    				
    				
    			<div class="row">
-<!--    	             <div class="col-sm-12">
-					  <div class="form-group">		
-                           <fieldset >
-                                     <legend style="font-size: 20px;">Equipamento com defeito</legend>
-   			               </fieldset>
-   			          </div>
-   			    </div>   -->
+
                  <div class="col-sm-4">
 					  <div class="form-group">
 						   <label for="input-chamado-equipamento">Equipamento
@@ -403,19 +406,12 @@
                  <div class="col-sm-4">
 					  <div class="form-group">
 						   <label for="input-chamado-usuario">Criado por 
-						          <a th:href="@{/usuarios/detalhes/{id}(id=${chamado.usuario.id})}" class="fa fa-eye" title="Ver usuário"></a>
+						          <a sec:authorize="hasAnyRole('ROLE_ADMINISTRADOR','ROLE_TECNICO')" th:href="@{/usuarios/detalhes/{id}(id=${chamado.usuario.id})}" class="fa fa-eye" title="Ver usuário"></a>
 						   </label>
                           <input id="input-chamado-usuario" class="form-control" readonly="readonly" th:value="${chamado.usuario.nome}" />
 					  </div>
                  </div>
-                 <div class="col-sm-4" th:if="${chamado.status.idStatus != 0}">
-					  <div class="form-group">
-						   <label for="input-chamado-tecnico">Atendido por
-						          <a th:href="@{/usuarios/detalhes/{id}(id=${chamado.tecnico.id})}" class="fa fa-eye" title="Ver usuário"></a>
-						   </label>
-                          <input id="input-chamado-tecnico" class="form-control" readonly="readonly" th:value="${chamado.tecnico.nome}" />
-					  </div>
-                 </div>                                                   			
+                                                 			
                  <div class="col-sm-4">
 					  <div class="form-group">
 						   <label for="input-chamado-prioridade">Prioridade</label>
@@ -430,59 +426,36 @@
                           <input id="input-chamado-status" class="form-control" readonly="readonly" th:value="${chamado.status}" />
 					  </div>
                  </div>
-                 <div class="col-sm-4">
+                 <div class="col-sm-4" th:if="${chamado.status.idStatus == 2}">
 					  <div class="form-group">
-						   <label for="input-chamado-status">Status2222</label>
-                          <input id="input-chamado-status" class="form-control" readonly="readonly" th:value="${chamado.status}" />
+						   <label for="input-chamado-status">Valor Total</label>
+                          <input id="input-chamado-status" class="form-control" readonly="readonly" th:value="${chamado.valorTotal}" />
 					  </div>
-                 </div>            
-
+                 </div>
+                 <div class="col-sm-4" th:if="${chamado.status.idStatus == 2}">
+					  <div class="form-group">
+						   <label for="input-chamado-tecnico">Tempo Total
+						         
+						   </label>
+                          <input id="input-chamado-tecnico" class="form-control" readonly="readonly" th:value="${chamado.tempoTotal}" />
+					  </div>
+                 </div>
+                             
+              <div class="form-group"  th:if="${chamado.reAbrir != null} ? ${Chamado.reAbrir != null}">
+					      <label for="textarea-chamado-descricao-solucao">Motivo de Reabertura</label>
+					      <textarea   id="textarea-chamado-descricao-solucao" maxlength="600" th:text="${chamado.reAbrir.motivo}" readonly="readonly"  rows="3"
+					                  class="form-control"></textarea>
+			  </div>   
          </div>        
          
-         <div th:if="${chamado.status.idStatus != 0}">
-             <th:block  th:each="solucao : ${chamado.solucoes}"> 
-                                        <fieldset class="form-group" style="padding-top: 5px">
-                             <legend>Datas</legend></fieldset>
-               
-               <div class="row">           
-                          
-                        <div class="col-sm-4">
-					         <div class="form-group">
-						          <label for="input-chamado-criacao">Data de Abertura</label>
-                                  <input id="input-chamado-criacao" class="form-control" readonly="readonly" th:value="${solucao.datas.dataCriacaoF}" />
-					         </div>
-                       </div>                         
-                            
-                          <div class="col-sm-4">
-					           <div class="form-group">
-						            <label for="input-chamado-atendimento">Inicio de Atendimento</label>
-                                   <input id="input-chamado-atendimento" class="form-control" readonly="readonly" th:value="${solucao.datas.dataCriacaoF}" />
-					          </div>
-                          </div>
-                 
-                     <div  th:if="${chamado.status.idStatus != 1}">                                         
-                       <div class="col-sm-4">
-					        <div class="form-group">
-						         <label for="input-chamado-finalizazao">Data de Finalização</label>
-                                <input id="input-chamado-finalizazao" class="form-control" readonly="readonly" th:value="${solucao.datas.dataCriacaoF}" />
-					        </div>
-                       </div>
-                       <div class="col-sm-4">
-					        <div class="form-group">
-						         <label for="input-chamado-tempo-total">Tempo de Atendimento</label>
-                                <input id="input-chamado-tempo-total" class="form-control" readonly="readonly" th:value="${solucao.datas.dataCriacaoF}" />
-					        </div>
-                       </div>  
-                 
-             </div>     
-           </div> 
-       
-                                             
-               <div id="informacoes" th:if="${chamado.status.idStatus == 2} ? ${chamado.status.idStatus == 2}">
+         <div th:if="${chamado.status.idStatus != 0}" style="padding-top: 20px;" >
+             <th:block  th:each="solucao : ${chamado.solucoes}" >
+             <div  th:with="count=${chamado.count}">
+               <div id="informacoes" th:if="${chamado.status.idStatus == 2} ? ${chamado.status.idStatus == 2}" style="padding-top: 20px;">
                                                                                 <fieldset class="form-group" style="padding-top: 5px">
-                             <legend>Solução</legend></fieldset>   
+                             <legend style="font-size: 25px">Solução <span th:text="${count}"></span></legend></fieldset>   
                                 
-                  <div class="row">      
+                  <div class="row" >      
 
                             
                              <div class="col-sm-4">                      
@@ -496,7 +469,7 @@
                             
                              <div class="col-sm-4">                      
                                    <div class="form-group">
-						                  <label for="input-chamado-locomocao">Gastos com locomoção</label>
+						                  <label for="input-chamado-locomocao">Gastos com transporte</label>
                                           <input id="input-chamado-locomocao" th:value="${solucao.valorTransporte}" readonly="readonly" class="form-control js-moeda" />
 					               </div>
                              </div>
@@ -508,31 +481,86 @@
                              </div>
                        <div class="col-sm-4">                      
                             <div class="form-group">
-						         <label for="valorTotal">Valor Total</label>
+						         <label for="valorTotal">Valor da Solução</label>
                                  <input id="valorTotal" class="form-control" th:value="${solucao.valorTotal}" readonly="readonly" />
 					       </div>
-                      </div>                                              
+                      </div> 
+                 <div class="col-sm-4">
+					  <div class="form-group">
+						   <label for="input-solucao-usuario"><span th:if="${count == 1 }">Criado por</span><span th:if="${count > 1 }">Reaberto por</span> 
+						   
+						          <a sec:authorize="hasAnyRole('ROLE_ADMINISTRADOR','ROLE_TECNICO')" th:href="@{/usuarios/detalhes/{id}(id=${solucao.usuario.id})}" class="fa fa-eye" title="Ver usuário"></a>
+						   </label>
+                          <input id="input-solucao-usuario" class="form-control" readonly="readonly" th:value="${solucao.usuario.nome}" />
+					  </div>
+                 </div>                      
+                      
+                 <div class="col-sm-4" >
+					  <div class="form-group">
+						   <label for="input-solucao-tecnico">Atendido por
+						          <a sec:authorize="hasAnyRole('ROLE_ADMINISTRADOR','ROLE_TECNICO')" th:href="@{/usuarios/detalhes/{id}(id=${solucao.tecnico.id})}" class="fa fa-eye" title="Ver usuário"></a>
+						   </label>
+                          <input id="input-solucao-tecnico" class="form-control" readonly="readonly" th:value="${solucao.tecnico.nome}" />
+					  </div>
+                 </div>                                                                      
               </div>
                      
-            </div>    
-    		   			   
-   			<div id="informacoes" th:if="${chamado.status.idStatus == 2} ? ${chamado.status.idStatus == 2}">   
+            </div>              
+   			<div id="informacoes" th:if="${chamado.status.idStatus == 2} ? ${chamado.status.idStatus == 2}" >   
    			   <div class="form-group" >
 					<label for="textarea-chamado-descricao-solucao">Solução</label>
 					<textarea   id="textarea-chamado-descricao-solucao" maxlength="600" th:text="${solucao.descricaoSolucao}" readonly="readonly"  rows="3"
 					class="form-control"></textarea>
 			  </div>
-              <div class="form-group" th:if="${chamado.reAbrir != null} ? ${chamado.reAbrir != null}">
+              <div class="form-group" th:if="${solucao.reAbrir != null} ? ${solucao.reAbrir != null}">
 					      <label for="textarea-chamado-descricao-solucao">Motivo de Reabertura</label>
-					      <textarea   id="textarea-chamado-descricao-solucao" maxlength="600" readonly="readonly"  rows="3"
+					      <textarea   id="textarea-chamado-descricao-solucao" maxlength="600" th:text="${solucao.reAbrir.motivo}" readonly="readonly"  rows="3"
 					                  class="form-control"></textarea>
 			  </div>          
           
-          </div>
+          </div>              
+                                        <fieldset class="form-group" >
+           
+                            <legend style="font-size: 20px">Datas</legend></fieldset>
           
+               
+               <div class="row" >           
+                          
+                        <div class="col-sm-4">
+					         <div class="form-group">
+						          <label for="input-chamado-criacao">Data de Abertura</label>
+                                  <input id="input-chamado-criacao" class="form-control" readonly="readonly" th:value="${solucao.datas.dataCriacaoF}" />
+					         </div>
+                       </div>                         
+                            
+                          <div class="col-sm-4">
+					           <div class="form-group">
+						            <label for="input-chamado-atendimento">Inicio de Atendimento</label>
+                                   <input id="input-chamado-atendimento" class="form-control" readonly="readonly" th:value="${solucao.datas.dataAtendimentoF}" />
+					          </div>
+                          </div>
+                 
+                     <div  th:if="${chamado.status.idStatus != 1}">                                         
+                       <div class="col-sm-4">
+					        <div class="form-group">
+						         <label for="input-chamado-finalizazao">Data de Finalização</label>
+                                <input id="input-chamado-finalizazao" class="form-control" readonly="readonly" th:value="${solucao.datas.dataFinalizacaoF}" />
+					        </div>
+                       </div>
+                       <div class="col-sm-4">
+					        <div class="form-group">
+						         <label for="input-chamado-tempo-total">Tempo de Atendimento</label>
+                                <input id="input-chamado-tempo-total" class="form-control" readonly="readonly" th:value="${solucao.datas.tempoSolucao}" />
+					        </div>
+                       </div>  
+                 
+             </div>     
+           </div> 
+   
           
-        </th:block>
-      </div>    
+       </div>   
+        </th:block>   
+   </div>    
    			   <div class="form-group">
 					<label for="textarea-chamado-descricao-reabrir">Motivo de reabrir o chamado</label>
 					<textarea   id="textarea-chamado-descricao-reabrir" maxlength="600"  rows="3" th:field="*{motivo}"
@@ -541,7 +569,7 @@
                  					
 					<div class="form-group">
 						<a class="btn btn-danger" data-toggle="modal" data-target="#confirmaReabrir" 
-						  data:url-reAbrir="@{/chamados/reabrir/{id}(id=${chamado.id})}"  data:nome="${chamado.id}" >Reabrir</a>
+						  data:url-reAbrir="@{/chamados/reabrir/{id}(id=${chamado.id})}"  data:nome="${chamado.id}" >Reabrir <span class="fa fa-folder-open"></span></a>
 	
 					</div>	
 					
